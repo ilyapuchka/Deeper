@@ -63,7 +63,7 @@ router.add(routes: [ .profile / .userId ]) { url, params in
 
 ```
 
-You can also use optional, conditional (this-or-this) or wildcard path components. Avoid very complex patterns because Swift can simply fail to compile it too complex expressions, but if you need you can use string format:
+You can also use optional, conditional (this-or-this) or wildcard path components. Avoid very complex patterns because Swift can simply fail to compile too complex expressions, but if you need you can use string format:
 
 ```swift
 // match any number of paths before "profile"
@@ -147,14 +147,14 @@ func application(_ app: UIApplication, open url: URL, options: [UIApplicationOpe
 }
 ```
 
-When `open(url:)` is called router will search for the pattern that matches this url and will invoke corresponding handler to get the intent from it. If some handler returns `nil` it will continue to match other handlers until it tries all of them.
+When `open(url:)` is called router will search for the pattern that matches this url and will invoke corresponding handler to get the intent from it. If some handler returns `nil` it will continue to match other handlers until it tries all of them. When matching pattern is found router will create `DeepLink` from url and intent returned by handler closure and will pass it to `open(deeplink:animated:) -> DeepLinkHandling<Intent>` method of a `rootDeepLinkHandler`.
 
 > Note: you can use any other deeplink router you want along with Deeper, you'll just need to write some extensions to bridge their APIs. In the [articale](http://ilya.puchka.me/deeplinks-no-brainer/) you can see an example of using [JLRoutes](https://github.com/joeldev/JLRoutes), which was an inspiration for Deeper router.
 
 To handle deeplinks you can adopt two different scenarios:
 
 - open destination screen from what ever screen user is currently on
-- perform all navigation to get to the destination screen like if custome will do all the navigation manually 
+- perform all navigation to get to the destination screen like if user would do all the navigation manually 
 
 What approach to choose is up to you, but *Deeper* allows you to implement any of them. For that you are provided with a set of `DeepLinkHandling` options which represent different kind of possible states that you may be in while handling deeplink. You can provide optional side effects that will be executed right after `open(deeplink:animated:) -> DeepLinkHandling<MyDeepLinkIntent>` returns. This can help you to simplify unit tests.
 
