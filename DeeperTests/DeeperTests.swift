@@ -7,11 +7,11 @@
 //
 
 import XCTest
-import Deeper
+@testable import Deeper
 
 extension DeepLinkPatternParameter {
     static let recipeId = DeepLinkPatternParameter("recipeId")
-    static let menuId = DeepLinkPatternParameter("menuId")
+    static let menuId = DeepLinkPatternParameter.num("menuId")
 }
 
 extension DeepLinkRoute {
@@ -61,9 +61,17 @@ class DeeperTests: XCTestCase {
         XCTAssertTrue(route.match(url: url).0)
         XCTAssertEqual(route.match(url: url).1, [.menuId: "123", .recipeId: "456"])
 
+        url = URL(string: "http://recipes/abc/456")!
+        XCTAssertFalse(route.match(url: url).0)
+
         url = URL(string: "http://recipe/123")!
         XCTAssertFalse(route.match(url: url).0)
         XCTAssertEqual(route.match(url: url).1, [:])
+
+        route = .recipes / ":num()" / .recipeId
+        url = URL(string: "http://recipes/123/456")!
+        XCTAssertTrue(route.match(url: url).0)
+        XCTAssertEqual(route.match(url: url).1, [.recipeId: "456"])
 
         route = .recipeId / .recipes
         url = URL(string: "http://123/recipes")!
@@ -244,7 +252,7 @@ class DeeperTests: XCTestCase {
     }
     
     func testStringToPatternConversion() {
-        let pattern = "(recipe|recipes|recipes/archive)/*/details/(info)/:recipeId".pattern
+        let pattern = "(recipe|recipes|recipes/archive)/*/details/(info)/:num(menuId)/:recipeId".pattern
         let expectedPattern: [DeepLinkPattern] = [
             DeepLinkPattern.or("recipe",
                                DeepLinkRoute(pattern: [
@@ -259,10 +267,34 @@ class DeeperTests: XCTestCase {
             DeepLinkPattern.any,
             DeepLinkPattern.string("details"),
             DeepLinkPattern.maybe("info"),
+            DeepLinkPattern.param(DeepLinkPatternParameter("menuId", type: .num)),
             DeepLinkPattern.param(DeepLinkPatternParameter("recipeId"))
         ]
         
         XCTAssertEqual(pattern, expectedPattern)
+    }
+    
+    func testParamTypeValidation() {
+        XCTAssertTrue(DeepLinkPatternParameter.ParamType.bool.validate("true"))
+        XCTAssertTrue(DeepLinkPatternParameter.ParamType.bool.validate("false"))
+        XCTAssertTrue(DeepLinkPatternParameter.ParamType.bool.validate("True"))
+        XCTAssertTrue(DeepLinkPatternParameter.ParamType.bool.validate("False"))
+        XCTAssertTrue(DeepLinkPatternParameter.ParamType.bool.validate("TRUE"))
+        XCTAssertTrue(DeepLinkPatternParameter.ParamType.bool.validate("FALSE"))
+        XCTAssertTrue(DeepLinkPatternParameter.ParamType.bool.validate("0"))
+        XCTAssertTrue(DeepLinkPatternParameter.ParamType.bool.validate("1"))
+        XCTAssertFalse(DeepLinkPatternParameter.ParamType.bool.validate("123"))
+        XCTAssertFalse(DeepLinkPatternParameter.ParamType.bool.validate("abc"))
+
+        XCTAssertTrue(DeepLinkPatternParameter.ParamType.num.validate("123"))
+        XCTAssertTrue(DeepLinkPatternParameter.ParamType.num.validate("123"))
+        XCTAssertTrue(DeepLinkPatternParameter.ParamType.num.validate("123.456"))
+        XCTAssertTrue(DeepLinkPatternParameter.ParamType.num.validate("123.456e+07"))
+        XCTAssertFalse(DeepLinkPatternParameter.ParamType.num.validate("abc"))
+        
+        XCTAssertTrue(DeepLinkPatternParameter.ParamType.str.validate("abc"))
+        XCTAssertTrue(DeepLinkPatternParameter.ParamType.str.validate("true"))
+        XCTAssertTrue(DeepLinkPatternParameter.ParamType.str.validate("123"))
     }
     
 }
