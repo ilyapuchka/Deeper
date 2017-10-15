@@ -7,27 +7,68 @@
 //
 
 public struct DeepLinkPatternParameter: RawRepresentable, Hashable {
+    public enum ParamType: String {
+        case num, str, bool
+        func validate(_ value: String) -> Bool {
+            switch self {
+            case .num: return Double(value) != nil
+            case .bool: return Bool(value.lowercased()) != nil || value == "0" || value == "1"
+            case .str: return true
+            }
+        }
+    }
     
-    public private(set) var rawValue: String
+    public let rawValue: String
+    public let type: ParamType?
     
     public init(rawValue: String) {
-        self.rawValue = rawValue
+        self.init(rawValue)
     }
     
     public init(_ rawValue: String) {
-        self.rawValue = rawValue
+        var _rawValue = rawValue.trimmingSuffix(")")
+        if _rawValue.trimPrefix("num(") {
+            self.init(_rawValue, type: .num)
+        } else if _rawValue.trimPrefix("str(") {
+            self.init(_rawValue, type: .str)
+        } else if _rawValue.trimPrefix("bool(") {
+            self.init(_rawValue, type: .bool)
+        } else {
+            self.init(rawValue, type: nil)
+        }
     }
-    
+
+    public init(_ rawValue: String, type: ParamType?) {
+        self.rawValue = rawValue
+        self.type = type
+    }
+
+    public static func num(_ rawValue: String) -> DeepLinkPatternParameter {
+        return .init(rawValue, type: .num)
+    }
+
+    public static func str(_ rawValue: String) -> DeepLinkPatternParameter {
+        return .init(rawValue, type: .str)
+    }
+
+    public static func bool(_ rawValue: String) -> DeepLinkPatternParameter {
+        return .init(rawValue, type: .bool)
+    }
+
     public static func ==(lhs: DeepLinkPatternParameter, rhs: DeepLinkPatternParameter) -> Bool {
-        return lhs.rawValue == rhs.rawValue
+        return lhs.rawValue == rhs.rawValue && lhs.type == rhs.type
     }
     
     public var hashValue: Int {
-        return rawValue.hashValue
+        return rawValue.hashValue ^ (type?.hashValue ?? 0)
     }
     
     public var description: String {
-        return rawValue
+        if let type = type {
+            return "\(type)(\(rawValue))"
+        } else {
+            return rawValue
+        }
     }
     
 }
@@ -43,9 +84,9 @@ public enum DeepLinkPattern: CustomStringConvertible, Equatable {
     
     public var description: String {
         switch self {
-        case .string(let str): return str.description
-        case .param(let param): return ":\(param.rawValue)"
-        case .or(let lhs, let rhs): return "(\(lhs.description)|\(rhs.description))"
+        case .string(let str): return str
+        case .param(let param): return ":\(param)"
+        case .or(let lhs, let rhs): return "(\(lhs)|\(rhs))"
         case .maybe(let route): return "(\(route))"
         case .any: return "*"
         }

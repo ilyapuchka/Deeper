@@ -83,7 +83,19 @@ public class DeepLinkPatternMatcher {
         case .string(let string):
             return (pathComponent == string, [:])
         case .param(let param):
-            return (true, [param: pathComponent])
+            if let type = param.type {
+                if type.validate(pathComponent) {
+                    if !param.rawValue.isEmpty {
+                        return (true, [param: pathComponent])
+                    } else {
+                        return (true, [:])
+                    }
+                } else {
+                    return (false, [:])
+                }
+            } else {
+                return (true, [param: pathComponent])
+            }
         case .or(let lhs, let rhs):
             // Tries to recursively match longest pattern first with the rest of path components
             let patterns = [lhs.pattern, rhs.pattern].sorted(by: { $0.count > $1.count })
