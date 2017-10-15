@@ -48,6 +48,20 @@ public func /(lhs: DeepLinkPatternParameter , rhs: DeepLinkPattern) -> DeepLinkR
     return DeepLinkRoute(pattern: lhs.pattern + [rhs])
 }
 
+infix operator /? : MultiplicationPrecedence
+
+public func /?(lhs: DeepLinkRoute, rhs: DeepLinkRoute) -> DeepLinkRoute {
+    return DeepLinkRoute(pattern: lhs.pattern + [.maybe(rhs)])
+}
+
+public func /?(lhs: DeepLinkPatternParameter, rhs: DeepLinkRoute) -> DeepLinkRoute {
+    return DeepLinkRoute(pattern: lhs.pattern + [.maybe(rhs)])
+}
+
+public func /?(lhs: DeepLinkPattern, rhs: DeepLinkRoute) -> DeepLinkRoute {
+    return DeepLinkRoute(pattern: [lhs] + [.maybe(rhs)])
+}
+
 public func |(lhs: DeepLinkRoute, rhs: DeepLinkRoute) -> DeepLinkRoute {
     return DeepLinkRoute(pattern: [.or(lhs, rhs)])
 }
