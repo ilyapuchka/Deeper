@@ -63,7 +63,7 @@ router.add(routes: [ .profile / .userId ]) { url, params in
 
 ```
 
-You can also use optional, conditional (this-or-this) or wildcard path components. Avoid very complex patterns because Swift can simply fail to compile too complex expressions, but if you need you can use string format:
+You can also use optional, conditional (this-or-this), wildcard or typed path components. Avoid very complex patterns because Swift can simply fail to compile too complex expressions, but if you need you can use string format:
 
 ```swift
 // match any number of paths before "profile"
@@ -77,6 +77,10 @@ route.add(routes: [ .profile | "user" / .userId ]) { }
 // match "profile/info/123" or just "profile/123"
 route.add(routes: [ .profile / .maybe(info) / .userId ]) { }
 route.add(routes: [ "profile/(info)/:userId" ]) { }
+
+// match "profile/123" but not "profile/abc"
+route.add(routes: [ .profile / .num("userId") ])
+route.add(routes: [ "profile/:num(userId)" ])
 ```
 
 ### Implement handlers
