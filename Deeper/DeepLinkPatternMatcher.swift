@@ -9,14 +9,14 @@
 public class DeepLinkPatternMatcher {
     public typealias Result = (matched: Bool, params: [DeepLinkPatternParameter: String])
 
-    private(set) var pattern: IndexingIterator<[DeepLinkPattern]>
-    let patternCount: Int
+    private var pattern: IndexingIterator<[DeepLinkPattern]>
+    private let patternCount: Int
     
-    private(set) var pathComponents: IndexingIterator<[String]>
-    let pathComponentsCount: Int
+    private var pathComponents: IndexingIterator<[String]>
+    private let pathComponentsCount: Int
     
-    private(set) var hasUnmatchedPattern: Bool
-    private(set) var hasUnmatchedPathComponent: Bool
+    private var hasUnmatchedPattern: Bool
+    private var hasUnmatchedPathComponent: Bool
     
     init(pattern: [DeepLinkPattern], pathComponents: [String]) {
         self.pattern = pattern.makeIterator()
@@ -28,7 +28,7 @@ public class DeepLinkPatternMatcher {
         self.pathComponentsCount = pathComponents.count
     }
     
-    func next() -> (pattern: DeepLinkPattern, pathComponent: String)? {
+    func nextPatternAndPathComponent() -> (pattern: DeepLinkPattern, pathComponent: String)? {
         var hasUnmatchedPattern: Bool { return !pattern.isEmpty }
         self.hasUnmatchedPattern = hasUnmatchedPattern
         
@@ -58,8 +58,8 @@ public class DeepLinkPatternMatcher {
         return (nextPattern, nextPathComponent)
     }
     
-    func match() -> DeepLinkPatternMatcher.Result {
-        let result = _match()
+    func match() -> Result {
+        let result = matchPatternWithPathComponents()
         // fail if patterns or path components are left
         if hasUnmatchedPattern == hasUnmatchedPathComponent, hasUnmatchedPattern == false {
             return result
@@ -68,79 +68,97 @@ public class DeepLinkPatternMatcher {
         }
     }
     
-    private func _match() -> DeepLinkPatternMatcher.Result {
+    private func matchPatternWithPathComponents() -> Result {
         var params = [DeepLinkPatternParameter: String]()
-        while let (pattern, pathComponent) = next() {
-            let result = _match(pattern: pattern, pathComponent: pathComponent)
+        while let (pattern, pathComponent) = nextPatternAndPathComponent() {
+            let result = match(pattern: pattern, pathComponent: pathComponent)
             guard result.matched else { return (false, [:]) }
             params.merge(result.params, uniquingKeysWith: { $1 })
         }
         return (true, params)
     }
 
-    private func _match(pattern: DeepLinkPattern, pathComponent: String) -> DeepLinkPatternMatcher.Result {
+    private func match(pattern: DeepLinkPattern, pathComponent: String) -> Result {
         switch pattern {
         case .string(let string):
             return (pathComponent == string, [:])
         case .param(let param):
-            if let type = param.type {
-                if type.validate(pathComponent) {
-                    if !param.rawValue.isEmpty {
-                        return (true, [param: pathComponent])
-                    } else {
-                        return (true, [:])
-                    }
-                } else {
-                    return (false, [:])
-                }
-            } else {
-                return (true, [param: pathComponent])
-            }
+            return matchParam(param, pathComponent)
         case .or(let lhs, let rhs):
-            // Tries to recursively match longest pattern first with the rest of path components
-            let patterns = [lhs.pattern, rhs.pattern].sorted(by: { $0.count > $1.count })
-
-            let _pathComponents = [pathComponent] + Array(pathComponents)
-            for pattern in patterns {
-                let _matcher = DeepLinkPatternMatcher(pattern: pattern, pathComponents: _pathComponents)
-                let result = _matcher._match()
-                if result.matched {
-                    // update iterator as we might already matched some paths
-                    // (this will drop all previosly matched path components)
-                    pathComponents = _matcher.pathComponents
-                    return result
-                }
-            }
-            return (false, [:])
+            return matchOr(lhs, rhs, pathComponent)
         case .maybe(let route):
-            let _pathComponents = [pathComponent] + Array(pathComponents)
-            let _matcher = DeepLinkPatternMatcher(pattern: route.pattern, pathComponents: _pathComponents)
-            let result = _matcher._match()
-            if result.matched {
-                pathComponents = _matcher.pathComponents
-                return result
-            }
-            return (true, [:])
+            return matchMaybe(route.pattern, pathComponent)
         case .any:
-            // Tries to math any further path with next pattern after `any`
-            guard let (nextPattern, nextPathComponent) = next() else { return (false, [:]) }
-            
-            var _pathComponents = pathComponents
-            var component: String! = nextPathComponent
-            repeat {
-                let result = _match(pattern: nextPattern, pathComponent: component)
-                if result.matched {
-                    pathComponents = _pathComponents
-                    return result
-                } else {
-                    component = _pathComponents.next()
-                }
-            } while component != nil
-            
-            // fail as none of the paths matched pattern after `any`
-            return (false, [:])
+            return matchAny()
         }
     }
+    
+    fileprivate func matchParam(_ param: DeepLinkPatternParameter, _ pathComponent: String) -> Result {
+        if let type = param.type {
+            if type.validate(pathComponent) {
+                if !param.rawValue.isEmpty {
+                    return (true, [param: pathComponent])
+                } else {
+                    return (true, [:])
+                }
+            } else {
+                return (false, [:])
+            }
+        } else {
+            return (true, [param: pathComponent])
+        }
+    }
+    
+    fileprivate func matchOr(_ lhs: DeepLinkPatternConvertible, _ rhs: DeepLinkPatternConvertible, _ pathComponent: String) -> Result {
+        // Tries to recursively match longest pattern first with the rest of path components
+        let patterns = [lhs.pattern, rhs.pattern].sorted(by: { $0.count > $1.count })
+        
+        let pathComponents = [pathComponent] + Array(self.pathComponents)
+        for pattern in patterns {
+            let _matcher = DeepLinkPatternMatcher(pattern: pattern, pathComponents: pathComponents)
+            let result = _matcher.matchPatternWithPathComponents()
+            if result.matched {
+                // update iterator as we might already matched some paths
+                // (this will drop all previosly matched path components)
+                self.pathComponents = _matcher.pathComponents
+                return result
+            }
+        }
+        return (false, [:])
+    }
+    
+    fileprivate func matchMaybe(_ pattern: [DeepLinkPattern], _ pathComponent: String) -> Result {
+        let pathComponents = [pathComponent] + Array(self.pathComponents)
+        let _matcher = DeepLinkPatternMatcher(pattern: pattern, pathComponents: pathComponents)
+        let result = _matcher.matchPatternWithPathComponents()
+        if result.matched {
+            self.pathComponents = _matcher.pathComponents
+            return result
+        }
+        self.pathComponents = pathComponents.makeIterator()
+        return (true, [:])
+    }
+    
+    fileprivate func matchAny() -> Result {
+        // Tries to math any further path with next pattern after `any`
+        guard let (nextPattern, nextPathComponent) = nextPatternAndPathComponent() else { return (false, [:]) }
+        
+        var pathComponents = self.pathComponents
+        var component: String! = nextPathComponent
+        repeat {
+            let result = match(pattern: nextPattern, pathComponent: component)
+            if result.matched {
+                self.pathComponents = pathComponents
+                return result
+            } else {
+                component = pathComponents.next()
+            }
+        } while component != nil
+        
+        // fail as none of the paths matched pattern after `any`
+        return (false, [:])
+    }
+    
 }
 
 extension IndexingIterator {

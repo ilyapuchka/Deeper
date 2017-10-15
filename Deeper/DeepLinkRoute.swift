@@ -20,7 +20,7 @@ public struct DeepLinkRoute: DeepLinkPatternConvertible, RawRepresentable {
     }
     
     public init(rawValue: String) {
-        self.init(pattern: rawValue.pattern)
+        self.init(rawValue)
     }
 
     public init(_ rawValue: String) {
