@@ -22,6 +22,9 @@ extension String: DeepLinkPatternConvertible {
     
     public var pattern: [DeepLinkPattern] {
         var component = self
+        if let queryStart = component.index(of: "?") {
+            component = String(component.prefix(upTo: queryStart))
+        }
         var wrappedInBrackets = false
         if component.hasPrefix("(") && component.hasSuffix(")") {
             component = String(component.dropFirst().dropLast())
@@ -51,6 +54,14 @@ extension String: DeepLinkPatternConvertible {
         }
     }
     
+    var query: [DeepLinkQueryPattern] {
+        guard let queryStart = index(of: "?") else { return [] }
+
+        let component = String(suffix(from: queryStart).dropFirst())
+        return component.components(separatedBy: "&").map({
+            DeepLinkQueryPattern.param(DeepLinkPatternParameter($0))
+        })
+    }
 }
 
 // stolen from Sourcery source code ¯\_(ツ)_/¯

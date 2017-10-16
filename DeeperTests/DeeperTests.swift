@@ -288,6 +288,71 @@ class DeeperTests: XCTestCase {
         XCTAssertFalse(route.match(url: url).0, "can't have two any next to each other")
     }
     
+    func testThatPatternMatchesQueryParameters() {
+        var route: DeepLinkRouteConvertible
+        var url: URL
+
+        route = "recipe" .? .recipeId & .menuId
+
+        url = URL(string: "http://recipe?recipeId=1&menuId=2")!
+        XCTAssertTrue(route.route.match(url: url).0)
+        XCTAssertEqual(route.route.match(url: url).1, [.recipeId: "1", .menuId: "2"])
+
+        url = URL(string: "http://recipe?menuId=2&recipeId=1")!
+        XCTAssertTrue(route.route.match(url: url).0)
+        XCTAssertEqual(route.route.match(url: url).1, [.recipeId: "1", .menuId: "2"])
+
+        url = URL(string: "http://recipe?recipeId=1&menuId=abc")!
+        XCTAssertFalse(route.route.match(url: url).0)
+
+        url = URL(string: "http://recipe?recipeId=1")!
+        XCTAssertFalse(route.route.match(url: url).0)
+
+        url = URL(string: "http://recipe?menuId=2")!
+        XCTAssertFalse(route.route.match(url: url).0)
+
+        url = URL(string: "http://recipe?recipeId=1&orderId=2")!
+        XCTAssertFalse(route.route.match(url: url).0)
+
+        route = "recipe" .?? .recipeId & .menuId
+
+        url = URL(string: "http://recipe?recipeId=1&menuId=2")!
+        XCTAssertTrue(route.route.match(url: url).0)
+        XCTAssertEqual(route.route.match(url: url).1, [.recipeId: "1", .menuId: "2"])
+
+        url = URL(string: "http://recipe?menuId=2")!
+        XCTAssertTrue(route.route.match(url: url).0)
+        XCTAssertEqual(route.route.match(url: url).1, [.menuId: "2"])
+
+        route = "recipe" .? .recipeId &? .menuId
+        
+        url = URL(string: "http://recipe?recipeId=1&menuId=2")!
+        XCTAssertTrue(route.route.match(url: url).0)
+        XCTAssertEqual(route.route.match(url: url).1, [.recipeId: "1", .menuId: "2"])
+
+        url = URL(string: "http://recipe?recipeId=1")!
+        XCTAssertTrue(route.route.match(url: url).0)
+        XCTAssertEqual(route.route.match(url: url).1, [.recipeId: "1"])
+
+        route = "recipe" .?? .recipeId &? .menuId
+
+        url = URL(string: "http://recipe")!
+        XCTAssertTrue(route.route.match(url: url).0)
+
+        route = "recipe" .? (.recipeId | .menuId)
+        
+        url = URL(string: "http://recipe?recipeId=1")!
+        XCTAssertTrue(route.route.match(url: url).0)
+        XCTAssertEqual(route.route.match(url: url).1, [.recipeId: "1"])
+        
+        url = URL(string: "http://recipe?menuId=2")!
+        XCTAssertTrue(route.route.match(url: url).0)
+        XCTAssertEqual(route.route.match(url: url).1, [.menuId: "2"])
+        
+        url = URL(string: "http://recipe")!
+        XCTAssertFalse(route.route.match(url: url).0)
+    }
+    
     func testStringToPatternConversion() {
         let pattern = "(recipe|recipes|recipes/archive)/*/details/(info)/:num(menuId)/:recipeId".pattern
         let expectedPattern: [DeepLinkPattern] = [

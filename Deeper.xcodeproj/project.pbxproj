@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		6341096A1F9540CA00274FAA /* DeepLinkQueryPattern.swift in Sources */ = {isa = PBXBuildFile; fileRef = 634109691F9540CA00274FAA /* DeepLinkQueryPattern.swift */; };
 		634EC4F41F8C3AD40075091D /* DeepLinkPatternMatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 634EC4F31F8C3AD40075091D /* DeepLinkPatternMatcher.swift */; };
 		634EC4F61F8D653E0075091D /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 634EC4F51F8D653E0075091D /* Utils.swift */; };
 		63BAF4BC1F7D7E310003DF2D /* Deeper.h in Headers */ = {isa = PBXBuildFile; fileRef = 63BAF4BA1F7D7E310003DF2D /* Deeper.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -33,6 +34,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		634109691F9540CA00274FAA /* DeepLinkQueryPattern.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepLinkQueryPattern.swift; sourceTree = "<group>"; };
 		634EC4F31F8C3AD40075091D /* DeepLinkPatternMatcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepLinkPatternMatcher.swift; sourceTree = "<group>"; };
 		634EC4F51F8D653E0075091D /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
 		63BAF4B71F7D7E310003DF2D /* Deeper.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Deeper.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -98,6 +100,7 @@
 				63C90E001F8C04C8003A5012 /* DeepLinkHandler.swift */,
 				63C90E041F8C0526003A5012 /* DeepLinkPatternConvertible.swift */,
 				63C90E061F8C0598003A5012 /* DeepLinkPattern.swift */,
+				634109691F9540CA00274FAA /* DeepLinkQueryPattern.swift */,
 				634EC4F31F8C3AD40075091D /* DeepLinkPatternMatcher.swift */,
 				63C90E081F8C05B0003A5012 /* DeepLinkRoute.swift */,
 				63C90E0E1F8C060B003A5012 /* DeepLinkRouter.swift */,
@@ -236,6 +239,7 @@
 				63C90DFD1F8C03C4003A5012 /* DeepLink.swift in Sources */,
 				63C90E071F8C0598003A5012 /* DeepLinkPattern.swift in Sources */,
 				63C90E051F8C0526003A5012 /* DeepLinkPatternConvertible.swift in Sources */,
+				6341096A1F9540CA00274FAA /* DeepLinkQueryPattern.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

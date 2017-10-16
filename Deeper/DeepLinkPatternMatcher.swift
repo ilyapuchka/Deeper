@@ -18,7 +18,10 @@ public class DeepLinkPatternMatcher {
     private var hasUnmatchedPattern: Bool
     private var hasUnmatchedPathComponent: Bool
     
-    init(pattern: [DeepLinkPattern], pathComponents: [String]) {
+    private let query: [DeepLinkQueryPattern]
+    private let queryItems: [URLQueryItem]
+    
+    init(pattern: [DeepLinkPattern], pathComponents: [String], query: [DeepLinkQueryPattern] = [], queryItems: [URLQueryItem] = []) {
         self.pattern = pattern.makeIterator()
         let pathComponents = pathComponents.filter({ !$0.isEmpty && $0 != "/" })
         self.pathComponents = pathComponents.makeIterator()
@@ -26,6 +29,8 @@ public class DeepLinkPatternMatcher {
         self.hasUnmatchedPathComponent = !pathComponents.isEmpty
         self.patternCount = pattern.count
         self.pathComponentsCount = pathComponents.count
+        self.query = query
+        self.queryItems = queryItems
     }
     
     func nextPatternAndPathComponent() -> (pattern: DeepLinkPattern, pathComponent: String)? {
@@ -62,7 +67,8 @@ public class DeepLinkPatternMatcher {
         let result = matchPatternWithPathComponents()
         // fail if patterns or path components are left
         if hasUnmatchedPattern == hasUnmatchedPathComponent, hasUnmatchedPattern == false {
-            return result
+            let queryResult = matchPatternWithQueryComponents()
+            return (result.matched && queryResult.matched, result.params.merging(queryResult.params, uniquingKeysWith: { $1 }))
         } else {
             return (false, [:])
         }
@@ -77,7 +83,7 @@ public class DeepLinkPatternMatcher {
         }
         return (true, params)
     }
-
+    
     private func match(pattern: DeepLinkPattern, pathComponent: String) -> Result {
         switch pattern {
         case .string(let string):
@@ -157,6 +163,46 @@ public class DeepLinkPatternMatcher {
         
         // fail as none of the paths matched pattern after `any`
         return (false, [:])
+    }
+    
+    private func matchPatternWithQueryComponents() -> Result {
+        var params = [DeepLinkPatternParameter: String]()
+        var queryItems = self.queryItems
+        queryPatternLoop: for queryPattern in query {
+            switch queryPattern {
+            case let .param(param):
+                let result = matchParam(param, &queryItems)
+                guard result.matched else { return (false, [:]) }
+                params.merge(result.params, uniquingKeysWith: { $1 })
+            case let .maybe(param):
+                let result = matchParam(param, &queryItems)
+                guard result.matched else { continue }
+                params.merge(result.params, uniquingKeysWith: { $1 })
+            case let .or(lhsParam, rhsParam):
+                var result = matchParam(lhsParam, &queryItems)
+                if !result.matched {
+                    result = matchParam(rhsParam, &queryItems)
+                }
+                guard result.matched else { return (false, [:]) }
+                params.merge(result.params, uniquingKeysWith: { $1 })
+            }
+        }
+        return (true, params)
+    }
+    
+    func matchParam(_ param: DeepLinkPatternParameter, _ queryItems: inout [URLQueryItem]) -> Result {
+        if let index = queryItems.index(where: {
+            guard $0.name == param.rawValue else { return false }
+            guard let value = $0.value else { return false }
+            if let type = param.type { return type.validate(value) }
+            else { return true }
+        }) {
+            let params = [param: queryItems[index].value!]
+            queryItems.remove(at: index)
+            return (true, params)
+        } else {
+            return (false, [:])
+        }
     }
     
 }
