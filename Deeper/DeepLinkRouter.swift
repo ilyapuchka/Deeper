@@ -19,7 +19,8 @@ public class DeepLinkRouter<Handler: DeepLinkHandler> {
         self.rootDeepLinkHandler = rootDeepLinkHandler
     }
     
-    public func add(routes: [DeepLinkRoute], handler: @escaping HandlerClosure) {
+    public func add(routes: [DeepLinkRouteConvertible], handler: @escaping HandlerClosure) {
+        let routes = routes.map({ $0.route })
         routesPreference.append(contentsOf: routes)
         routes.forEach({ routesHandlers[$0] = handler })
     }
