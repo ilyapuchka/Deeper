@@ -56,10 +56,30 @@ extension String: DeepLinkPatternConvertible {
     
     var query: [DeepLinkQueryPattern] {
         guard let queryStart = index(of: "?") else { return [] }
-
         let component = String(suffix(from: queryStart).dropFirst())
-        return component.components(separatedBy: "&").map({
-            DeepLinkQueryPattern.param(DeepLinkPatternParameter($0))
+        
+        return component.components(separatedBy: "&").flatMap({ component in
+            var component = component
+            var wrappedInBrackets = false
+            if component.hasPrefix("(") && component.hasSuffix(")") {
+                component = String(component.dropFirst().dropLast())
+                wrappedInBrackets = true
+            }
+
+            let orComponents = component.components(separatedBy: "|", excludingDelimiterBetween: ("(", ")"))
+            if orComponents.count > 1, orComponents[0].hasPrefix(":"), orComponents[1].hasPrefix(":") {
+                let lhs = DeepLinkPatternParameter(String(orComponents[0].dropFirst()))
+                let rhs = DeepLinkPatternParameter(String(orComponents[1].dropFirst()))
+                return .or(lhs, rhs)
+            }
+            
+            guard component.hasPrefix(":") else { return nil }
+            
+            if wrappedInBrackets {
+                return .maybe(DeepLinkPatternParameter(String(component.dropFirst())))
+            } else {
+                return .param(DeepLinkPatternParameter(String(component.dropFirst())))
+            }
         })
     }
 }

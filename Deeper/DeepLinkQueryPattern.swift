@@ -15,7 +15,7 @@ public enum DeepLinkQueryPattern: CustomStringConvertible, Equatable {
         switch self {
         case let .param(param): return ":\(param)"
         case let .maybe(param): return "(:\(param))"
-        case let .or(lhs, rhs): return "(:\(lhs)|:\(rhs)"
+        case let .or(lhs, rhs): return "(:\(lhs)|:\(rhs))"
         }
     }
     
