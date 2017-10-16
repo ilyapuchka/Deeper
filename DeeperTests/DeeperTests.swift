@@ -354,7 +354,9 @@ class DeeperTests: XCTestCase {
     }
     
     func testStringToPatternConversion() {
-        let pattern = "(recipe|recipes|recipes/archive)/*/details/(info)/:num(menuId)/:recipeId".pattern
+        let stringFormat = "(recipe|recipes|recipes/archive)/*/details/(info)/:num(menuId)/:recipeId?:recipeId&(:num(menuId))&(:utm|:tmp)"
+        let pattern = stringFormat.pattern
+        let query = stringFormat.query
         let expectedPattern: [DeepLinkPattern] = [
             DeepLinkPattern.or("recipe",
                                DeepLinkRoute(pattern: [
@@ -372,8 +374,14 @@ class DeeperTests: XCTestCase {
             DeepLinkPattern.param(DeepLinkPatternParameter("menuId", type: .num)),
             DeepLinkPattern.param(DeepLinkPatternParameter("recipeId"))
         ]
+        let expectedQuery: [DeepLinkQueryPattern] = [
+            DeepLinkQueryPattern.param(DeepLinkPatternParameter("recipeId")),
+            DeepLinkQueryPattern.maybe(DeepLinkPatternParameter("menuId", type: .num)),
+            DeepLinkQueryPattern.or(DeepLinkPatternParameter("utm"), DeepLinkPatternParameter("tmp"))
+        ]
         
         XCTAssertEqual(pattern, expectedPattern)
+        XCTAssertEqual(query, expectedQuery)
     }
     
     func testParamTypeValidation() {
