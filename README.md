@@ -182,7 +182,7 @@ func application(_ app: UIApplication, open url: URL, options: [UIApplicationOpe
 
 When `open(url:)` is called router will search for the pattern that matches this url and will invoke corresponding handler to get the intent from it. If some handler returns `nil` it will continue to match other handlers until it tries all of them. When matching pattern is found router will create `DeepLink` from url and intent returned by handler closure and will pass it to `open(deeplink:animated:) -> DeepLinkHandling<Intent>` method of a `rootDeepLinkHandler`.
 
-> Note: you can use any other deeplink router you want along with Deeper, you'll just need to write some extensions to bridge their APIs. In the [articale](http://ilya.puchka.me/deeplinks-no-brainer/) you can see an example of using [JLRoutes](https://github.com/joeldev/JLRoutes), which was an inspiration for Deeper router.
+> Note: you can use any other deeplink router you want along with Deeper, you'll just need to write some extensions to bridge their APIs. In the [article](http://ilya.puchka.me/deeplinks-no-brainer/) you can see an example of using [JLRoutes](https://github.com/joeldev/JLRoutes), which was an inspiration for Deeper router.
 
 To handle deeplinks you can adopt two different scenarios:
 
@@ -210,7 +210,7 @@ public enum DeepLinkHandling<Intent> {
 
 ```
 
-In general that's it, the rest depends on your imagination and how your application is built. In the [articale](http://ilya.puchka.me/deeplinks-no-brainer/) you can find more extensive code examples more close to real life project.
+In general that's it, the rest depends on your imagination and how your application is built. In the [article](http://ilya.puchka.me/deeplinks-no-brainer/) you can find more extensive code examples more close to real life project.
 
 ### TODO:
 
