@@ -71,17 +71,41 @@ route.add(routes: [ .any / .profile / .userId ]) { ... }
 route.add(routes: [ "*/profile/:userId" ]) { ... }
 
 // match "profile" or "user" path
-route.add(routes: [ "(profile|user)/:userId" ]) { }
 route.add(routes: [ .profile | "user" / .userId ]) { }
+route.add(routes: [ "(profile|user)/:userId" ]) { }
 
 // match "profile/info/123" or just "profile/123"
-route.add(routes: [ .profile / .maybe(info) / .userId ]) { }
+route.add(routes: [ .profile /? "info" / .userId ]) { }
 route.add(routes: [ "profile/(info)/:userId" ]) { }
 
 // match "profile/123" but not "profile/abc"
 route.add(routes: [ .profile / .num("userId") ])
 route.add(routes: [ "profile/:num(userId)" ])
 ```
+
+#### Query parameters
+
+Along with path path components you can match query parameters. Query parameters will be matched even if they appear in url in a different order then in a pttern. Url also can have any other parameters, they will be simply ignored during matching. Query paremeters in a pattern are required unless they are explicitely marked as optional using `.maybe` or `.or` pattern.
+
+```swift
+// match `profile/userId=123&locale=us`
+route.add(routes: [ .any / .profile .? .userId & .locale ]) { ... }
+route.add(routes: [ "*/profile?:userId&:locale" ]) { ... }
+
+// match `profile/userId=123&locale=us` and `profile/userId=123`
+route.add(routes: [ .any / .profile .? .userId &? .locale ]) { ... }
+route.add(routes: [ "*/profile?:userId&:locale" ]) { ... }
+```
+
+#### Custom operators
+
+`/` - concatenates parts of path into a single route
+`/?` - same as `/` but makes following path pattern optional (the same as using `.maybe` pattern)
+`.?` - marks end of path pattern and start of query pattern, appends first query pattern to the route
+`.&` - appends following query pattern to the route, can only be used after applying `.?` or `.??`
+`.??` / `.&?` - the same as `.?` / `.&` but makes following query pattern optional (the same as using `.maybe` pattern)
+`|` - defines a pattern with two alternatives, either left or right pattern should match, left pattern will be checked first (the same as using `.or` pattern)
+
 
 ### Implement handlers
 
