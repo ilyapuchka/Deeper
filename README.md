@@ -100,10 +100,15 @@ route.add(routes: [ "*/profile?:userId&:locale" ]) { ... }
 #### Custom operators
 
 `/` - concatenates parts of path into a single route
+
 `/?` - same as `/` but makes following path pattern optional (the same as using `.maybe` pattern)
+
 `.?` - marks end of path pattern and start of query pattern, appends first query pattern to the route
+
 `.&` - appends following query pattern to the route, can only be used after applying `.?` or `.??`
+
 `.??` / `.&?` - the same as `.?` / `.&` but makes following query pattern optional (the same as using `.maybe` pattern)
+
 `|` - defines a pattern with two alternatives, either left or right pattern should match, left pattern will be checked first (the same as using `.or` pattern)
 
 
