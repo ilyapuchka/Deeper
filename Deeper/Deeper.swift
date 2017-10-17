@@ -6,9 +6,17 @@
 //  Copyright © 2017 Ilya Puchka. All rights reserved.
 //
 
-var logger: Logger = Logger()
+var clearDeeplinkHandling = true
+var logger: Logger? = Logger()
+
+public func configure(clearDeeplinkHandling: Bool = true, logger: Logger? = Logger()) {
+    Deeper.clearDeeplinkHandling = clearDeeplinkHandling
+    Deeper.logger = logger
+}
 
 open class Logger {
+    
+    public init() {}
 
     open func log<Handler: DeepLinkHandler>(deeplink: DeepLink<Handler.Intent>, result: DeepLinkHandling<Handler.Intent>, handler: Handler) {
         print(result)

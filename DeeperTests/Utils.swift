@@ -14,7 +14,8 @@ enum Intent {
 class DelayedHandler: DeepLinkHandler {
     var deeplinkHandling: DeepLinkHandling<Intent>? {
         didSet {
-            states.append(deeplinkHandling!)
+            guard let deeplinkHandling = deeplinkHandling else { return }
+            states.append(deeplinkHandling)
         }
     }
     var calledSideEffect: Bool = false
@@ -34,7 +35,8 @@ class DelayedHandler: DeepLinkHandler {
 class PassThroughHandler: DeepLinkHandler {
     var deeplinkHandling: DeepLinkHandling<Intent>? {
         didSet {
-            states.append(deeplinkHandling!)
+            guard let deeplinkHandling = deeplinkHandling else { return }
+            states.append(deeplinkHandling)
         }
     }
     var calledSideEffect: Bool = false
@@ -53,7 +55,8 @@ class PassThroughHandler: DeepLinkHandler {
 class FinalHandler: AnyDeepLinkHandler<Intent> {
     override var deeplinkHandling: DeepLinkHandling<Intent>? {
         didSet {
-            states.append(deeplinkHandling!)
+            guard let deeplinkHandling = deeplinkHandling else { return }
+            states.append(deeplinkHandling)
         }
     }
     var calledSideEffect: Bool = false
@@ -73,7 +76,8 @@ class FinalHandler: AnyDeepLinkHandler<Intent> {
 class RejecthHandler: DeepLinkHandler {
     var deeplinkHandling: DeepLinkHandling<Intent>? {
         didSet {
-            states.append(deeplinkHandling!)
+            guard let deeplinkHandling = deeplinkHandling else { return }
+            states.append(deeplinkHandling)
         }
     }
     var states: [DeepLinkHandling<Intent>] = []

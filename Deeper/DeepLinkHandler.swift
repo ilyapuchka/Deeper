@@ -21,7 +21,7 @@ extension DeepLinkHandler {
     /// but you usually don't need to do that as passedThrough state will call it on returned handler itself
     public func open(deeplink: DeepLink<Intent>, animated: Bool) {
         let result = open(deeplink: deeplink, animated: animated)
-        logger.log(deeplink: deeplink, result: result, handler: self)
+        logger?.log(deeplink: deeplink, result: result, handler: self)
         deeplinkHandling = result
         
         switch result {
@@ -34,6 +34,9 @@ extension DeepLinkHandler {
             let handler = sideEffect(animated)
             handler.open(deeplink: deeplink, animated: animated) as Void
         default: break
+        }
+        if clearDeeplinkHandling {
+            deeplinkHandling = nil
         }
     }
     
