@@ -54,7 +54,15 @@ public struct DeepLinkRoute: RawRepresentable, Hashable, ExpressibleByStringLite
 
 }
 
-public struct DeepLinkRouteWithQuery: CustomStringConvertible {
+public protocol DeepLinkRouteConvertible: CustomStringConvertible {
+    var route: DeepLinkRoute { get }
+}
+
+extension DeepLinkRoute: DeepLinkRouteConvertible {
+    public var route: DeepLinkRoute { return self }
+}
+
+public struct DeepLinkRouteWithQuery: DeepLinkRouteConvertible, CustomStringConvertible {
     public let route: DeepLinkRoute
     
     init(pattern: [DeepLinkPathPattern], query: [DeepLinkQueryPattern]) {
@@ -65,20 +73,6 @@ public struct DeepLinkRouteWithQuery: CustomStringConvertible {
         return route.description
     }
     
-}
-
-public protocol DeepLinkRouteConvertible: CustomStringConvertible {
-    var route: DeepLinkRoute { get }
-}
-
-extension DeepLinkRoute: DeepLinkRouteConvertible {
-    public var route: DeepLinkRoute { return self }
-}
-
-extension DeepLinkRouteWithQuery: DeepLinkRouteConvertible {}
-
-extension String: DeepLinkRouteConvertible {
-    public var route: DeepLinkRoute { return DeepLinkRoute(self) }
 }
 
 extension String {

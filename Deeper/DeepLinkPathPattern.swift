@@ -6,7 +6,7 @@
 //  Copyright © 2017 Ilya Puchka. All rights reserved.
 //
 
-public struct DeepLinkPatternParameter: RawRepresentable, Hashable {
+public struct DeepLinkPatternParameter: RawRepresentable, Hashable, CustomStringConvertible {
     public enum ParamType: String {
         case num, str, bool
         func validate(_ value: String) -> Bool {
