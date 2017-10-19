@@ -7,12 +7,12 @@
 //
 
 public protocol DeepLinkPatternConvertible: CustomStringConvertible {
-    var pattern: [DeepLinkPattern] { get }
+    var pattern: [DeepLinkPathPattern] { get }
 }
 
 extension DeepLinkPatternParameter: DeepLinkPatternConvertible {
     
-    public var pattern: [DeepLinkPattern] {
+    public var pattern: [DeepLinkPathPattern] {
         return [.param(self)]
     }
     
@@ -20,7 +20,7 @@ extension DeepLinkPatternParameter: DeepLinkPatternConvertible {
 
 extension String: DeepLinkPatternConvertible {
     
-    public var pattern: [DeepLinkPattern] {
+    public var pattern: [DeepLinkPathPattern] {
         var component = self
         if let queryStart = component.index(of: "?") {
             component = String(component.prefix(upTo: queryStart))
@@ -155,7 +155,7 @@ extension String {
     }
 }
 
-extension Array where Element == DeepLinkPattern {
+extension Array where Element == DeepLinkPathPattern {
     
     var deepLinkPatternConvertible: DeepLinkPatternConvertible {
         if count == 1, case .string(let str)? = first {

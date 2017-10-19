@@ -357,22 +357,22 @@ class DeeperTests: XCTestCase {
         let stringFormat = "(recipe|recipes|recipes/archive)/*/details/(info)/:num(menuId)/:recipeId?:recipeId&(:num(menuId))&(:utm|:tmp)"
         let pattern = stringFormat.pattern
         let query = stringFormat.query
-        let expectedPattern: [DeepLinkPattern] = [
-            DeepLinkPattern.or("recipe",
+        let expectedPattern: [DeepLinkPathPattern] = [
+            DeepLinkPathPattern.or("recipe",
                                DeepLinkRoute(pattern: [
-                                DeepLinkPattern.or("recipes",
+                                DeepLinkPathPattern.or("recipes",
                                                    DeepLinkRoute(pattern: [
-                                                    DeepLinkPattern.string("recipes"),
-                                                    DeepLinkPattern.string("archive"),
+                                                    DeepLinkPathPattern.string("recipes"),
+                                                    DeepLinkPathPattern.string("archive"),
                                                     ])
                                 )]
                 )
             ),
-            DeepLinkPattern.any,
-            DeepLinkPattern.string("details"),
-            DeepLinkPattern.maybe("info"),
-            DeepLinkPattern.param(DeepLinkPatternParameter("menuId", type: .num)),
-            DeepLinkPattern.param(DeepLinkPatternParameter("recipeId"))
+            DeepLinkPathPattern.any,
+            DeepLinkPathPattern.string("details"),
+            DeepLinkPathPattern.maybe("info"),
+            DeepLinkPathPattern.param(DeepLinkPatternParameter("menuId", type: .num)),
+            DeepLinkPathPattern.param(DeepLinkPatternParameter("recipeId"))
         ]
         let expectedQuery: [DeepLinkQueryPattern] = [
             DeepLinkQueryPattern.param(DeepLinkPatternParameter("recipeId")),

@@ -73,7 +73,7 @@ public struct DeepLinkPatternParameter: RawRepresentable, Hashable {
     
 }
 
-public enum DeepLinkPattern: CustomStringConvertible, Equatable {
+public enum DeepLinkPathPattern: CustomStringConvertible, Equatable {
     
     case string(String)
     case param(DeepLinkPatternParameter)
@@ -92,7 +92,7 @@ public enum DeepLinkPattern: CustomStringConvertible, Equatable {
         }
     }
     
-    public static func ==(lhs: DeepLinkPattern, rhs: DeepLinkPattern) -> Bool {
+    public static func ==(lhs: DeepLinkPathPattern, rhs: DeepLinkPathPattern) -> Bool {
         switch (lhs, rhs) {
         case let (.string(lhsString), .string(rhsString)):
             return lhsString == rhsString

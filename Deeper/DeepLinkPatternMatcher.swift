@@ -9,7 +9,7 @@
 public class DeepLinkPatternMatcher {
     public typealias Result = (matched: Bool, params: [DeepLinkPatternParameter: String])
 
-    private var pattern: IndexingIterator<[DeepLinkPattern]>
+    private var pattern: IndexingIterator<[DeepLinkPathPattern]>
     private let patternCount: Int
     
     private var pathComponents: IndexingIterator<[String]>
@@ -21,7 +21,7 @@ public class DeepLinkPatternMatcher {
     private let query: [DeepLinkQueryPattern]
     private let queryItems: [URLQueryItem]
     
-    init(pattern: [DeepLinkPattern], pathComponents: [String], query: [DeepLinkQueryPattern] = [], queryItems: [URLQueryItem] = []) {
+    init(pattern: [DeepLinkPathPattern], pathComponents: [String], query: [DeepLinkQueryPattern] = [], queryItems: [URLQueryItem] = []) {
         self.pattern = pattern.makeIterator()
         let pathComponents = pathComponents.filter({ !$0.isEmpty && $0 != "/" })
         self.pathComponents = pathComponents.makeIterator()
@@ -33,7 +33,7 @@ public class DeepLinkPatternMatcher {
         self.queryItems = queryItems
     }
     
-    func nextPatternAndPathComponent() -> (pattern: DeepLinkPattern, pathComponent: String)? {
+    func nextPatternAndPathComponent() -> (pattern: DeepLinkPathPattern, pathComponent: String)? {
         var hasUnmatchedPattern: Bool { return !pattern.isEmpty }
         self.hasUnmatchedPattern = hasUnmatchedPattern
         
@@ -84,7 +84,7 @@ public class DeepLinkPatternMatcher {
         return (true, params)
     }
     
-    private func match(pattern: DeepLinkPattern, pathComponent: String) -> Result {
+    private func match(pattern: DeepLinkPathPattern, pathComponent: String) -> Result {
         switch pattern {
         case .string(let string):
             return (pathComponent == string, [:])
@@ -133,7 +133,7 @@ public class DeepLinkPatternMatcher {
         return (false, [:])
     }
     
-    fileprivate func matchMaybe(_ pattern: [DeepLinkPattern], _ pathComponent: String) -> Result {
+    fileprivate func matchMaybe(_ pattern: [DeepLinkPathPattern], _ pathComponent: String) -> Result {
         let pathComponents = [pathComponent] + Array(self.pathComponents)
         let _matcher = DeepLinkPatternMatcher(pattern: pattern, pathComponents: pathComponents)
         let result = _matcher.matchPatternWithPathComponents()

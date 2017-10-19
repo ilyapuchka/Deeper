@@ -8,12 +8,12 @@
 
 public struct DeepLinkRoute: DeepLinkPatternConvertible, RawRepresentable, Hashable, ExpressibleByStringLiteral {
     
-    public let pattern: [DeepLinkPattern]
+    public let pattern: [DeepLinkPathPattern]
     public let query: [DeepLinkQueryPattern]
     
     public let rawValue: String
     
-    public init(pattern: [DeepLinkPattern], query: [DeepLinkQueryPattern] = []) {
+    public init(pattern: [DeepLinkPathPattern], query: [DeepLinkQueryPattern] = []) {
         self.pattern = pattern.filter({
             if case let .string(value) = $0 { return !value.isEmpty }
             else { return true }
@@ -67,7 +67,7 @@ public struct DeepLinkRouteWithQuery: CustomStringConvertible, ExpressibleByStri
         self.init(pattern: value.pattern, query: value.query)
     }
 
-    init(pattern: [DeepLinkPattern], query: [DeepLinkQueryPattern]) {
+    init(pattern: [DeepLinkPathPattern], query: [DeepLinkQueryPattern]) {
         self.route = DeepLinkRoute(pattern: pattern, query: query)
     }
     

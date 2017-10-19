@@ -40,19 +40,19 @@ public func /(lhs: DeepLinkPatternParameter, rhs: DeepLinkRoute) -> DeepLinkRout
     return DeepLinkRoute(pattern: lhs.pattern + rhs.pattern)
 }
 
-public func /(lhs: DeepLinkRoute, rhs: DeepLinkPattern) -> DeepLinkRoute {
+public func /(lhs: DeepLinkRoute, rhs: DeepLinkPathPattern) -> DeepLinkRoute {
     return DeepLinkRoute(pattern: lhs.pattern + [rhs])
 }
 
-public func /(lhs: DeepLinkPattern, rhs: DeepLinkRoute) -> DeepLinkRoute {
+public func /(lhs: DeepLinkPathPattern, rhs: DeepLinkRoute) -> DeepLinkRoute {
     return DeepLinkRoute(pattern: [lhs] + rhs.pattern)
 }
 
-public func /(lhs: DeepLinkPattern, rhs: DeepLinkPatternParameter) -> DeepLinkRoute {
+public func /(lhs: DeepLinkPathPattern, rhs: DeepLinkPatternParameter) -> DeepLinkRoute {
     return DeepLinkRoute(pattern: [lhs] + rhs.pattern)
 }
 
-public func /(lhs: DeepLinkPatternParameter , rhs: DeepLinkPattern) -> DeepLinkRoute {
+public func /(lhs: DeepLinkPatternParameter , rhs: DeepLinkPathPattern) -> DeepLinkRoute {
     return DeepLinkRoute(pattern: lhs.pattern + [rhs])
 }
 
@@ -66,7 +66,7 @@ public func /?(lhs: DeepLinkPatternParameter, rhs: DeepLinkRoute) -> DeepLinkRou
     return DeepLinkRoute(pattern: lhs.pattern + [.maybe(rhs)])
 }
 
-public func /?(lhs: DeepLinkPattern, rhs: DeepLinkRoute) -> DeepLinkRoute {
+public func /?(lhs: DeepLinkPathPattern, rhs: DeepLinkRoute) -> DeepLinkRoute {
     return DeepLinkRoute(pattern: [lhs] + [.maybe(rhs)])
 }
 
