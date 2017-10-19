@@ -77,7 +77,7 @@ public enum DeepLinkPathPattern: CustomStringConvertible, Equatable {
     
     case string(String)
     case param(DeepLinkPatternParameter)
-    case or(DeepLinkPatternConvertible, DeepLinkPatternConvertible)
+    case or(DeepLinkRoute, DeepLinkRoute)
     case maybe(DeepLinkRoute)
     // can be used only in the end or between two string patterns
     case any
@@ -99,8 +99,7 @@ public enum DeepLinkPathPattern: CustomStringConvertible, Equatable {
         case let (.param(lhsParam), .param(rhsParam)):
             return lhsParam == rhsParam
         case let (.or(lhsOptions), .or(rhsOptions)):
-            return lhsOptions.0.pattern == rhsOptions.0.pattern &&
-                lhsOptions.1.pattern == rhsOptions.1.pattern
+            return lhsOptions.0 == rhsOptions.0 && lhsOptions.1 == rhsOptions.1
         case let (.maybe(lhsRoute), .maybe(rhsRoute)):
             return lhsRoute == rhsRoute
         case (.any, .any):

@@ -124,7 +124,7 @@ public class DeepLinkPatternMatcher {
         }
     }
     
-    fileprivate func matchOr(_ lhs: DeepLinkPatternConvertible, _ rhs: DeepLinkPatternConvertible, _ pathComponent: String) -> Result {
+    fileprivate func matchOr(_ lhs: DeepLinkRoute, _ rhs: DeepLinkRoute, _ pathComponent: String) -> Result {
         // Tries to recursively match longest pattern first with the rest of path components
         let patterns = [lhs.pattern, rhs.pattern].sorted(by: { $0.count > $1.count })
         
