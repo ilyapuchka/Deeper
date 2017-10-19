@@ -6,7 +6,7 @@
 //  Copyright © 2017 Ilya Puchka. All rights reserved.
 //
 
-public struct DeepLinkRoute: DeepLinkPatternConvertible, RawRepresentable, Hashable, ExpressibleByStringLiteral {
+public struct DeepLinkRoute: DeepLinkPathPatternConvertible, RawRepresentable, Hashable, ExpressibleByStringLiteral, ExpressibleByArrayLiteral {
     
     public let pattern: [DeepLinkPathPattern]
     public let query: [DeepLinkQueryPattern]
@@ -34,6 +34,10 @@ public struct DeepLinkRoute: DeepLinkPatternConvertible, RawRepresentable, Hasha
 
     public init(stringLiteral value: String) {
         self.init(pattern: value.pattern)
+    }
+    
+    public init(arrayLiteral elements: DeepLinkPathPattern...) {
+        self.init(pattern: elements)
     }
 
     public var hashValue: Int {
