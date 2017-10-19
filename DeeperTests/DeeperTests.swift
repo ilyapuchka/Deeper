@@ -18,339 +18,177 @@ extension DeepLinkRoute {
     static let recipes = DeepLinkRoute("recipes")
 }
 
+func AssertMatches(_ route: DeepLinkRouteConvertible, _ url: String, params: [DeepLinkPatternParameter: String]? = nil, _ message: String = "", file: StaticString = #file, line: UInt = #line) {
+    let result = DeepLinkPatternMatcher(route: route, url: URL(string: url)!).match()
+    XCTAssertTrue(result.0, message, file: file, line: line)
+    if let expectedParams = params {
+        XCTAssertEqual(result.1, expectedParams, message, file: file, line: line)
+    }
+}
+
+func AssertNotMatch(_ route: DeepLinkRouteConvertible, _ url: String, _ message: String = "", file: StaticString = #file, line: UInt = #line) {
+    let result = DeepLinkPatternMatcher(route: route, url: URL(string: url)!).match()
+    XCTAssertFalse(result.0, message, file: file, line: line)
+    XCTAssertEqual(result.1, [:])
+}
+
 class DeeperTests: XCTestCase {
     
     func testThatPatternMatchesString() {
         var route: DeepLinkRoute
-        var url: URL
         
         route = "recipes"
-        url = URL(string: "http://recipes")!
-        XCTAssertTrue(route.match(url: url).0)
-        
-        url = URL(string: "http://recipe")!
-        XCTAssertFalse(route.match(url: url).0)
-
-        url = URL(string: "http://recipe/archive")!
-        XCTAssertFalse(route.match(url: url).0)
+        AssertMatches(route, "http://recipes")
+        AssertNotMatch(route, "http://recipe")
+        AssertNotMatch(route, "http://recipe/archive")
 
         route = "recipes/archive"
-        url = URL(string: "http://recipes/archive")!
-        XCTAssertTrue(route.match(url: url).0)
-        
-        url = URL(string: "http://recipes/archives")!
-        XCTAssertFalse(route.match(url: url).0)
-
-        url = URL(string: "http://recipes")!
-        XCTAssertFalse(route.match(url: url).0)
+        AssertMatches(route, "http://recipes/archive")
+        AssertNotMatch(route, "http://recipes/archives")
+        AssertNotMatch(route, "http://recipes")
     }
 
     func testThatPatternMatchesParameter() {
         var route: DeepLinkRoute
-        var url: URL
 
         // have to use empty string as there is no convertion between param and pattern,
         // though this pattern is not likely to be used in real scenarios
         route = "" / .recipeId
-        url = URL(string: "http://123")!
-        XCTAssertTrue(route.match(url: url).0)
-        XCTAssertEqual(route.match(url: url).1, [.recipeId: "123"])
+        AssertMatches(route, "http://123", params: [.recipeId: "123"])
 
         route = .recipes / .menuId / .recipeId
-        url = URL(string: "http://recipes/123/456")!
-        XCTAssertTrue(route.match(url: url).0)
-        XCTAssertEqual(route.match(url: url).1, [.menuId: "123", .recipeId: "456"])
-
-        url = URL(string: "http://recipes/abc/456")!
-        XCTAssertFalse(route.match(url: url).0)
-
-        url = URL(string: "http://recipe/123")!
-        XCTAssertFalse(route.match(url: url).0)
-        XCTAssertEqual(route.match(url: url).1, [:])
+        AssertMatches(route, "http://recipes/123/456", params: [.menuId: "123", .recipeId: "456"])
+        AssertNotMatch(route, "http://recipes/abc/456")
+        AssertNotMatch(route, "http://recipe/123")
 
         route = .recipes / ":num()" / .recipeId
-        url = URL(string: "http://recipes/123/456")!
-        XCTAssertTrue(route.match(url: url).0)
-        XCTAssertEqual(route.match(url: url).1, [.recipeId: "456"])
+        AssertMatches(route, "http://recipes/123/456", params: [.recipeId: "456"])
 
         route = .recipeId / .recipes
-        url = URL(string: "http://123/recipes")!
-        XCTAssertTrue(route.match(url: url).0)
-        XCTAssertEqual(route.match(url: url).1, [.recipeId: "123"])
-
-        url = URL(string: "http://123/recipe")!
-        XCTAssertFalse(route.match(url: url).0)
-        XCTAssertEqual(route.match(url: url).1, [:])
+        AssertMatches(route, "http://123/recipes", params: [.recipeId: "123"])
+        AssertNotMatch(route, "http://123/recipe")
     }
     
     func testThatPatternMatchesCondition() {
         var route: DeepLinkRoute
-        var url: URL
 
         route = "recipe" | .recipes
-
-        url = URL(string: "http://recipe")!
-        XCTAssertTrue(route.match(url: url).0)
-
-        url = URL(string: "http://recipes")!
-        XCTAssertTrue(route.match(url: url).0)
-
-        url = URL(string: "http://recipes/archive")!
-        XCTAssertFalse(route.match(url: url).0)
+        AssertMatches(route, "http://recipe")
+        AssertMatches(route, "http://recipes")
+        AssertNotMatch(route, "http://recipes/archive")
 
         route = ("recipe" | "recipes") / "archive"
-        
-        url = URL(string: "http://recipe/archive")!
-        XCTAssertTrue(route.match(url: url).0)
-        
-        url = URL(string: "http://recipes/archive")!
-        XCTAssertTrue(route.match(url: url).0)
-
-        url = URL(string: "http://recipes/archives")!
-        XCTAssertFalse(route.match(url: url).0)
+        AssertMatches(route, "http://recipe/archive")
+        AssertMatches(route, "http://recipes/archive")
+        AssertNotMatch(route, "http://recipes/archives")
 
         route = ("recipe" | "recipes" | "recipes" / "archive") / .recipeId
-        
-        url = URL(string: "http://recipe/123")!
-        XCTAssertTrue(route.match(url: url).0)
-        XCTAssertEqual(route.match(url: url).1, [.recipeId: "123"])
-
-        url = URL(string: "http://recipes/archive/123")!
-        XCTAssertTrue(route.match(url: url).0)
-        XCTAssertEqual(route.match(url: url).1, [.recipeId: "123"])
-
-        url = URL(string: "http://recipes/archive/id/123")!
-        XCTAssertFalse(route.match(url: url).0)
-        XCTAssertEqual(route.match(url: url).1, [:])
-
-        url = URL(string: "http://recipes/123")!
-        XCTAssertTrue(route.match(url: url).0)
-        XCTAssertEqual(route.match(url: url).1, [.recipeId: "123"])
-
-        url = URL(string: "http://recipes/all/123")!
-        XCTAssertFalse(route.match(url: url).0)
-        XCTAssertEqual(route.match(url: url).1, [:])
+        AssertMatches(route, "http://recipe/123", params: [.recipeId: "123"])
+        AssertMatches(route, "http://recipes/archive/123", params: [.recipeId: "123"])
+        AssertMatches(route, "http://recipes/123", params: [.recipeId: "123"])
+        AssertNotMatch(route, "http://recipes/archive/id/123")
+        AssertNotMatch(route, "http://recipes/all/123")
 
         route = (("recipe" / .recipeId) | ("recipes" / .recipeId / "details"))
-        
-        url = URL(string: "http://recipe/123")!
-        XCTAssertTrue(route.match(url: url).0)
-        XCTAssertEqual(route.match(url: url).1, [.recipeId: "123"])
-
-        url = URL(string: "http://recipes/123/details")!
-        XCTAssertTrue(route.match(url: url).0)
-        XCTAssertEqual(route.match(url: url).1, [.recipeId: "123"])
+        AssertMatches(route, "http://recipe/123", params: [.recipeId: "123"])
+        AssertMatches(route, "http://recipes/123/details", params: [.recipeId: "123"])
     }
     
     func testThatPatternMatchesMaybe() {
         var route: DeepLinkRoute
-        var url: URL
         
         route = "recipe" / "(details)" / "archive"
-
-        url = URL(string: "http://recipe/details/archive")!
-        XCTAssertTrue(route.match(url: url).0)
-
-        url = URL(string: "http://recipe/archive")!
-        XCTAssertTrue(route.match(url: url).0)
-
-        url = URL(string: "http://recipe")!
-        XCTAssertFalse(route.match(url: url).0)
-
-        url = URL(string: "http://recipe/archive/data")!
-        XCTAssertFalse(route.match(url: url).0)
+        AssertMatches(route, "http://recipe/details/archive")
+        AssertMatches(route, "http://recipe/archive")
+        AssertNotMatch(route, "http://recipe")
+        AssertNotMatch(route, "http://recipe/archive/data")
 
         route = "recipe" /? ("details" / .recipeId)
-        
-        url = URL(string: "http://recipe/details/123")!
-        XCTAssertTrue(route.match(url: url).0)
-        XCTAssertEqual(route.match(url: url).1, [.recipeId: "123"])
-        
-        url = URL(string: "http://recipe/details")!
-        XCTAssertTrue(route.match(url: url).0)
+        AssertMatches(route, "http://recipe/details/123", params: [.recipeId: "123"])
+        AssertMatches(route, "http://recipe/details")
         
         route = "recipe" /? ("details" | "detail") / .recipeId
-
-        url = URL(string: "http://recipe/details/123")!
-        XCTAssertTrue(route.match(url: url).0)
-        XCTAssertEqual(route.match(url: url).1, [.recipeId: "123"])
-
-        url = URL(string: "http://recipe/detail/123")!
-        XCTAssertTrue(route.match(url: url).0)
-        XCTAssertEqual(route.match(url: url).1, [.recipeId: "123"])
-
-        url = URL(string: "http://recipe/archive/123")!
-        XCTAssertFalse(route.match(url: url).0)
-
-        url = URL(string: "http://recipe/123")!
-        XCTAssertTrue(route.match(url: url).0)
-        XCTAssertEqual(route.match(url: url).1, [.recipeId: "123"])
-        
-        url = URL(string: "http://recipe/details/detail/123")!
-        XCTAssertFalse(route.match(url: url).0)
+        AssertMatches(route, "http://recipe/details/123", params: [.recipeId: "123"])
+        AssertMatches(route, "http://recipe/detail/123", params: [.recipeId: "123"])
+        AssertMatches(route, "http://recipe/123", params: [.recipeId: "123"])
+        AssertNotMatch(route, "http://recipe/archive/123")
+        AssertNotMatch(route, "http://recipe/details/detail/123")
 
         route = "recipe" /? "details" /? "detail" / .recipeId
         
-        url = URL(string: "http://recipe/details/123")!
-        XCTAssertTrue(route.match(url: url).0)
-        XCTAssertEqual(route.match(url: url).1, [.recipeId: "123"])
-        
-        url = URL(string: "http://recipe/detail/123")!
-        XCTAssertTrue(route.match(url: url).0)
-        XCTAssertEqual(route.match(url: url).1, [.recipeId: "123"])
-        
-        url = URL(string: "http://recipe/details/detail/123")!
-        XCTAssertTrue(route.match(url: url).0)
-        XCTAssertEqual(route.match(url: url).1, [.recipeId: "123"])
+        AssertMatches(route, "http://recipe/details/123", params: [.recipeId: "123"])
+        AssertMatches(route, "http://recipe/detail/123", params: [.recipeId: "123"])
+        AssertMatches(route, "http://recipe/details/detail/123", params: [.recipeId: "123"])
     }
 
     func testThatPatternMatchesAny() {
         var route: DeepLinkRoute
-        var url: URL
-
-        route = "recipe" / .any
         
-        url = URL(string: "http://recipe/123")!
-        XCTAssertTrue(route.match(url: url).0)
-
-        url = URL(string: "http://recipe")!
-        XCTAssertFalse(route.match(url: url).0)
+        route = "recipe" / .any
+        AssertMatches(route, "http://recipe/123")
+        AssertNotMatch(route, "http://recipe")
 
         route = .any / "recipe"
-        
-        url = URL(string: "http://some/recipe")!
-        XCTAssertTrue(route.match(url: url).0)
-
-        url = URL(string: "http://recipe")!
-        XCTAssertFalse(route.match(url: url).0)
+        AssertMatches(route, "http://some/recipe")
+        AssertNotMatch(route, "http://recipe")
 
         route = .recipeId / .any / "recipe"
-        
-        url = URL(string: "http://123/recipe/recipe")!
-        XCTAssertTrue(route.match(url: url).0)
-        XCTAssertEqual(route.match(url: url).1, [.recipeId: "123"])
-        
-        url = URL(string: "http://123/recipe")!
-        XCTAssertFalse(route.match(url: url).0)
+        AssertMatches(route, "http://123/recipe/recipe", params: [.recipeId: "123"])
+        AssertNotMatch(route, "http://123/recipe")
 
         route = "recipe" / .any / "details"
-
-        url = URL(string: "http://recipe/archive/details")!
-        XCTAssertTrue(route.match(url: url).0)
-
-        url = URL(string: "http://recipe/archive/123/details")!
-        XCTAssertTrue(route.match(url: url).0)
-
-        url = URL(string: "http://recipe/details")!
-        XCTAssertFalse(route.match(url: url).0)
-        
-        url = URL(string: "http://recipe/archive/details/123")!
-        XCTAssertFalse(route.match(url: url).0)
+        AssertMatches(route, "http://recipe/archive/details")
+        AssertMatches(route, "http://recipe/archive/123/details")
+        AssertNotMatch(route, "http://recipe/details")
+        AssertNotMatch(route, "http://recipe/archive/details/123")
 
         route = "recipe" / .any / "details" / .any
-
-        url = URL(string: "http://recipe/archive/details/123")!
-        XCTAssertTrue(route.match(url: url).0)
-
-        url = URL(string: "http://recipe/archive/details")!
-        XCTAssertFalse(route.match(url: url).0)
-
-        url = URL(string: "http://recipe/archive")!
-        XCTAssertFalse(route.match(url: url).0)
+        AssertMatches(route, "http://recipe/archive/details/123")
+        AssertNotMatch(route, "http://recipe/archive/details")
+        AssertNotMatch(route, "http://recipe/archive")
 
         route = "recipe" / .any / ("details" / "recipe" | "view") / .any
-        
-        url = URL(string: "http://recipe/archive/details/recipe/123")!
-        XCTAssertTrue(route.match(url: url).0)
-
-        url = URL(string: "http://recipe/archive/view/123")!
-        XCTAssertTrue(route.match(url: url).0)
-
-        url = URL(string: "http://recipe/archive/details/123")!
-        XCTAssertFalse(route.match(url: url).0)
-
-        url = URL(string: "http://recipe/archive/overview/123")!
-        XCTAssertFalse(route.match(url: url).0)
+        AssertMatches(route, "http://recipe/archive/details/recipe/123")
+        AssertMatches(route, "http://recipe/archive/view/123")
+        AssertNotMatch(route, "http://recipe/archive/details/123")
+        AssertNotMatch(route, "http://recipe/archive/overview/123")
 
         route = "recipe" / .any / "details" / .recipeId
-        
-        url = URL(string: "http://recipe/archive/details/123")!
-        XCTAssertTrue(route.match(url: url).0)
-        XCTAssertEqual(route.match(url: url).1, [.recipeId: "123"])
+        AssertMatches(route, "http://recipe/archive/details/123", params: [.recipeId: "123"])
         
         route = "recipe" / .any / .recipeId
-        
-        url = URL(string: "http://recipe/archive/details/123")!
-        XCTAssertFalse(route.match(url: url).0, "any can be used only in the end or between two string patterns")
+        AssertNotMatch(route, "http://recipe/archive/details/123", "any can be used only in the end or between two string patterns")
         
         route = "recipe" / .any / .any
-        url = URL(string: "http://recipe/archive/details/123")!
-        XCTAssertFalse(route.match(url: url).0, "can't have two any next to each other")
+        AssertNotMatch(route, "http://recipe/archive/details/123", "can't have two any next to each other")
     }
     
     func testThatPatternMatchesQueryParameters() {
         var route: DeepLinkRouteConvertible
-        var url: URL
 
         route = "recipe" .? .recipeId & .menuId
-
-        url = URL(string: "http://recipe?recipeId=1&menuId=2")!
-        XCTAssertTrue(route.route.match(url: url).0)
-        XCTAssertEqual(route.route.match(url: url).1, [.recipeId: "1", .menuId: "2"])
-
-        url = URL(string: "http://recipe?menuId=2&recipeId=1")!
-        XCTAssertTrue(route.route.match(url: url).0)
-        XCTAssertEqual(route.route.match(url: url).1, [.recipeId: "1", .menuId: "2"])
-
-        url = URL(string: "http://recipe?recipeId=1&menuId=abc")!
-        XCTAssertFalse(route.route.match(url: url).0)
-
-        url = URL(string: "http://recipe?recipeId=1")!
-        XCTAssertFalse(route.route.match(url: url).0)
-
-        url = URL(string: "http://recipe?menuId=2")!
-        XCTAssertFalse(route.route.match(url: url).0)
-
-        url = URL(string: "http://recipe?recipeId=1&orderId=2")!
-        XCTAssertFalse(route.route.match(url: url).0)
+        AssertMatches(route, "http://recipe?recipeId=1&menuId=2", params: [.recipeId: "1", .menuId: "2"])
+        AssertMatches(route, "http://recipe?menuId=2&recipeId=1", params: [.recipeId: "1", .menuId: "2"])
+        AssertNotMatch(route, "http://recipe?recipeId=1&menuId=abc")
+        AssertNotMatch(route, "http://recipe?recipeId=1")
+        AssertNotMatch(route, "http://recipe?menuId=2")
+        AssertNotMatch(route, "http://recipe?recipeId=1&orderId=2")
 
         route = "recipe" .?? .recipeId & .menuId
-
-        url = URL(string: "http://recipe?recipeId=1&menuId=2")!
-        XCTAssertTrue(route.route.match(url: url).0)
-        XCTAssertEqual(route.route.match(url: url).1, [.recipeId: "1", .menuId: "2"])
-
-        url = URL(string: "http://recipe?menuId=2")!
-        XCTAssertTrue(route.route.match(url: url).0)
-        XCTAssertEqual(route.route.match(url: url).1, [.menuId: "2"])
+        AssertMatches(route, "http://recipe?recipeId=1&menuId=2", params: [.recipeId: "1", .menuId: "2"])
+        AssertMatches(route, "http://recipe?menuId=2", params: [.menuId: "2"])
 
         route = "recipe" .? .recipeId &? .menuId
-        
-        url = URL(string: "http://recipe?recipeId=1&menuId=2")!
-        XCTAssertTrue(route.route.match(url: url).0)
-        XCTAssertEqual(route.route.match(url: url).1, [.recipeId: "1", .menuId: "2"])
-
-        url = URL(string: "http://recipe?recipeId=1")!
-        XCTAssertTrue(route.route.match(url: url).0)
-        XCTAssertEqual(route.route.match(url: url).1, [.recipeId: "1"])
+        AssertMatches(route, "http://recipe?recipeId=1&menuId=2", params: [.recipeId: "1", .menuId: "2"])
+        AssertMatches(route, "http://recipe?recipeId=1", params: [.recipeId: "1"])
 
         route = "recipe" .?? .recipeId &? .menuId
-
-        url = URL(string: "http://recipe")!
-        XCTAssertTrue(route.route.match(url: url).0)
+        AssertMatches(route, "http://recipe")
 
         route = "recipe" .? (.recipeId | .menuId)
-        
-        url = URL(string: "http://recipe?recipeId=1")!
-        XCTAssertTrue(route.route.match(url: url).0)
-        XCTAssertEqual(route.route.match(url: url).1, [.recipeId: "1"])
-        
-        url = URL(string: "http://recipe?menuId=2")!
-        XCTAssertTrue(route.route.match(url: url).0)
-        XCTAssertEqual(route.route.match(url: url).1, [.menuId: "2"])
-        
-        url = URL(string: "http://recipe")!
-        XCTAssertFalse(route.route.match(url: url).0)
+        AssertMatches(route, "http://recipe?recipeId=1", params: [.recipeId: "1"])
+        AssertMatches(route, "http://recipe?menuId=2", params: [.menuId: "2"])
+        AssertNotMatch(route, "http://recipe")
     }
     
     func testStringToPatternConversion() {
