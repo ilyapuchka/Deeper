@@ -41,7 +41,8 @@ public class DeepLinkRouter<Handler: DeepLinkHandler> {
         guard url.scheme == scheme else { return nil }
         
         for route in routesPreference {
-            let result = route.match(url: url)
+            let matcher = DeepLinkPatternMatcher(route: route, url: url)
+            let result = matcher.match()
             if result.matched, let handler = routesHandlers[route], let intent = handler(url, result.params) {
                 return (result, intent)
             }

@@ -21,6 +21,15 @@ public class DeepLinkPatternMatcher {
     private let query: [DeepLinkQueryPattern]
     private let queryItems: [URLQueryItem]
     
+    convenience init(route: DeepLinkRouteConvertible, url: URL) {
+        self.init(
+            pattern: route.route.pattern,
+            pathComponents: ([url.host].flatMap({ $0 }) + url.pathComponents),
+            query: route.route.query,
+            queryItems: URLComponents(url: url, resolvingAgainstBaseURL: false)?.queryItems ?? []
+        )
+    }
+    
     init(pattern: [DeepLinkPathPattern], pathComponents: [String], query: [DeepLinkQueryPattern] = [], queryItems: [URLQueryItem] = []) {
         self.pattern = pattern.makeIterator()
         let pathComponents = pathComponents.filter({ !$0.isEmpty && $0 != "/" })

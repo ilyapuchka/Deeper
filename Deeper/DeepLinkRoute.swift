@@ -36,16 +36,6 @@ public struct DeepLinkRoute: DeepLinkPatternConvertible, RawRepresentable, Hasha
         self.init(pattern: value.pattern)
     }
 
-    public func match(url: URL) -> DeepLinkPatternMatcher.Result {
-        let matcher = DeepLinkPatternMatcher(
-            pattern: pattern,
-            pathComponents: ([url.host].flatMap({ $0 }) + url.pathComponents),
-            query: query,
-            queryItems: URLComponents(url: url, resolvingAgainstBaseURL: false)?.queryItems ?? []
-        )
-        return matcher.match()
-    }
-    
     public var hashValue: Int {
         return rawValue.hashValue
     }
