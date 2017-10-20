@@ -7,23 +7,43 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		6341096A1F9540CA00274FAA /* DeepLinkQueryPattern.swift in Sources */ = {isa = PBXBuildFile; fileRef = 634109691F9540CA00274FAA /* DeepLinkQueryPattern.swift */; };
-		634EC4F41F8C3AD40075091D /* DeepLinkPatternMatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 634EC4F31F8C3AD40075091D /* DeepLinkPatternMatcher.swift */; };
+		6309ADE81FA5F54500ADA0CE /* Maybe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6309ADE71FA5F54500ADA0CE /* Maybe.swift */; };
 		634EC4F61F8D653E0075091D /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 634EC4F51F8D653E0075091D /* Utils.swift */; };
+		6355F2121FA28633000A608E /* DeeperFunc.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6355F2091FA28632000A608E /* DeeperFunc.framework */; };
+		6355F2171FA28633000A608E /* DeeperFuncTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6355F2161FA28633000A608E /* DeeperFuncTests.swift */; };
+		6355F2191FA28633000A608E /* DeeperFunc.h in Headers */ = {isa = PBXBuildFile; fileRef = 6355F20B1FA28632000A608E /* DeeperFunc.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		6355F2211FA28649000A608E /* Deeper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6355F2201FA28649000A608E /* Deeper.swift */; };
+		6355F2231FA28EF8000A608E /* Any.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6355F2221FA28EF8000A608E /* Any.swift */; };
+		6355F2251FA28F2A000A608E /* Query.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6355F2241FA28F2A000A608E /* Query.swift */; };
+		6355F2271FA28F87000A608E /* Router.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6355F2261FA28F87000A608E /* Router.swift */; };
+		6355F2291FA294FE000A608E /* Path.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6355F2281FA294FE000A608E /* Path.swift */; };
+		6355F22B1FA4F91A000A608E /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6355F22A1FA4F91A000A608E /* String.swift */; };
+		6355F22D1FA4FA52000A608E /* Parser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6355F22C1FA4FA52000A608E /* Parser.swift */; };
+		6355F22F1FA4FA6D000A608E /* Printer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6355F22E1FA4FA6D000A608E /* Printer.swift */; };
 		63BAF4BC1F7D7E310003DF2D /* Deeper.h in Headers */ = {isa = PBXBuildFile; fileRef = 63BAF4BA1F7D7E310003DF2D /* Deeper.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		63BAF4C31F7D7E5B0003DF2D /* Deeper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63BAF4C21F7D7E5B0003DF2D /* Deeper.swift */; };
 		63BAF4CB1F7D92230003DF2D /* DeeperTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63BAF4CA1F7D92230003DF2D /* DeeperTests.swift */; };
 		63BAF4CD1F7D92230003DF2D /* Deeper.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 63BAF4B71F7D7E310003DF2D /* Deeper.framework */; };
-		63C90DFD1F8C03C4003A5012 /* DeepLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63C90DFC1F8C03C3003A5012 /* DeepLink.swift */; };
-		63C90DFF1F8C0491003A5012 /* DeepLinkHandling.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63C90DFE1F8C0491003A5012 /* DeepLinkHandling.swift */; };
-		63C90E011F8C04C8003A5012 /* DeepLinkHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63C90E001F8C04C8003A5012 /* DeepLinkHandler.swift */; };
 		63C90E051F8C0526003A5012 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63C90E041F8C0526003A5012 /* Utils.swift */; };
-		63C90E071F8C0598003A5012 /* DeepLinkPathPattern.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63C90E061F8C0598003A5012 /* DeepLinkPathPattern.swift */; };
-		63C90E091F8C05B0003A5012 /* DeepLinkRoute.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63C90E081F8C05B0003A5012 /* DeepLinkRoute.swift */; };
-		63C90E0F1F8C060B003A5012 /* DeepLinkRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63C90E0E1F8C060B003A5012 /* DeepLinkRouter.swift */; };
+		63E642331F9E8E4E0094CA73 /* Deeper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63BAF4C21F7D7E5B0003DF2D /* Deeper.swift */; };
+		63E642341F9E8E4E0094CA73 /* DeepLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63C90DFC1F8C03C3003A5012 /* DeepLink.swift */; };
+		63E642351F9E8E4E0094CA73 /* DeepLinkHandling.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63C90DFE1F8C0491003A5012 /* DeepLinkHandling.swift */; };
+		63E642361F9E8E4E0094CA73 /* DeepLinkHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63C90E001F8C04C8003A5012 /* DeepLinkHandler.swift */; };
+		63E642371F9E8E4E0094CA73 /* DeepLinkPathPattern.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63C90E061F8C0598003A5012 /* DeepLinkPathPattern.swift */; };
+		63E642381F9E8E4E0094CA73 /* DeepLinkQueryPattern.swift in Sources */ = {isa = PBXBuildFile; fileRef = 634109691F9540CA00274FAA /* DeepLinkQueryPattern.swift */; };
+		63E642391F9E8E4E0094CA73 /* DeepLinkPatternMatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 634EC4F31F8C3AD40075091D /* DeepLinkPatternMatcher.swift */; };
+		63E6423A1F9E8E4E0094CA73 /* DeepLinkRoute.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63C90E081F8C05B0003A5012 /* DeepLinkRoute.swift */; };
+		63E6423B1F9E8E4E0094CA73 /* DeepLinkRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63C90E0E1F8C060B003A5012 /* DeepLinkRouter.swift */; };
+		63E6423C1F9E8E4E0094CA73 /* Parser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 630E77461F9AA80F002E25E4 /* Parser.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		6355F2131FA28633000A608E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 63BAF4AE1F7D7E310003DF2D /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 6355F2081FA28632000A608E;
+			remoteInfo = DeeperFunc;
+		};
 		63BAF4CE1F7D92230003DF2D /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 63BAF4AE1F7D7E310003DF2D /* Project object */;
@@ -34,9 +54,25 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		6309ADE71FA5F54500ADA0CE /* Maybe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Maybe.swift; sourceTree = "<group>"; };
+		630E77461F9AA80F002E25E4 /* Parser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Parser.swift; sourceTree = "<group>"; };
 		634109691F9540CA00274FAA /* DeepLinkQueryPattern.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepLinkQueryPattern.swift; sourceTree = "<group>"; };
 		634EC4F31F8C3AD40075091D /* DeepLinkPatternMatcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepLinkPatternMatcher.swift; sourceTree = "<group>"; };
 		634EC4F51F8D653E0075091D /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
+		6355F2091FA28632000A608E /* DeeperFunc.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = DeeperFunc.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		6355F20B1FA28632000A608E /* DeeperFunc.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DeeperFunc.h; sourceTree = "<group>"; };
+		6355F20C1FA28632000A608E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		6355F2111FA28633000A608E /* DeeperFuncTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DeeperFuncTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		6355F2161FA28633000A608E /* DeeperFuncTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeeperFuncTests.swift; sourceTree = "<group>"; };
+		6355F2181FA28633000A608E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		6355F2201FA28649000A608E /* Deeper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Deeper.swift; sourceTree = "<group>"; };
+		6355F2221FA28EF8000A608E /* Any.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Any.swift; sourceTree = "<group>"; };
+		6355F2241FA28F2A000A608E /* Query.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Query.swift; sourceTree = "<group>"; };
+		6355F2261FA28F87000A608E /* Router.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Router.swift; sourceTree = "<group>"; };
+		6355F2281FA294FE000A608E /* Path.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Path.swift; sourceTree = "<group>"; };
+		6355F22A1FA4F91A000A608E /* String.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = String.swift; sourceTree = "<group>"; };
+		6355F22C1FA4FA52000A608E /* Parser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Parser.swift; sourceTree = "<group>"; };
+		6355F22E1FA4FA6D000A608E /* Printer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Printer.swift; sourceTree = "<group>"; };
 		63BAF4B71F7D7E310003DF2D /* Deeper.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Deeper.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		63BAF4BA1F7D7E310003DF2D /* Deeper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Deeper.h; sourceTree = "<group>"; };
 		63BAF4BB1F7D7E310003DF2D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -54,6 +90,21 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		6355F2051FA28632000A608E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		6355F20E1FA28633000A608E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6355F2121FA28633000A608E /* DeeperFunc.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		63BAF4B31F7D7E310003DF2D /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -72,11 +123,40 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		6355F20A1FA28632000A608E /* DeeperFunc */ = {
+			isa = PBXGroup;
+			children = (
+				6355F20B1FA28632000A608E /* DeeperFunc.h */,
+				6355F2201FA28649000A608E /* Deeper.swift */,
+				6355F2261FA28F87000A608E /* Router.swift */,
+				6355F22C1FA4FA52000A608E /* Parser.swift */,
+				6355F22E1FA4FA6D000A608E /* Printer.swift */,
+				6355F2281FA294FE000A608E /* Path.swift */,
+				6355F2241FA28F2A000A608E /* Query.swift */,
+				6355F2221FA28EF8000A608E /* Any.swift */,
+				6309ADE71FA5F54500ADA0CE /* Maybe.swift */,
+				6355F22A1FA4F91A000A608E /* String.swift */,
+				6355F20C1FA28632000A608E /* Info.plist */,
+			);
+			path = DeeperFunc;
+			sourceTree = "<group>";
+		};
+		6355F2151FA28633000A608E /* DeeperFuncTests */ = {
+			isa = PBXGroup;
+			children = (
+				6355F2161FA28633000A608E /* DeeperFuncTests.swift */,
+				6355F2181FA28633000A608E /* Info.plist */,
+			);
+			path = DeeperFuncTests;
+			sourceTree = "<group>";
+		};
 		63BAF4AD1F7D7E310003DF2D = {
 			isa = PBXGroup;
 			children = (
 				63BAF4B91F7D7E310003DF2D /* Deeper */,
 				63BAF4C91F7D92230003DF2D /* DeeperTests */,
+				6355F20A1FA28632000A608E /* DeeperFunc */,
+				6355F2151FA28633000A608E /* DeeperFuncTests */,
 				63BAF4B81F7D7E310003DF2D /* Products */,
 			);
 			sourceTree = "<group>";
@@ -86,6 +166,8 @@
 			children = (
 				63BAF4B71F7D7E310003DF2D /* Deeper.framework */,
 				63BAF4C81F7D92220003DF2D /* DeeperTests.xctest */,
+				6355F2091FA28632000A608E /* DeeperFunc.framework */,
+				6355F2111FA28633000A608E /* DeeperFuncTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -98,12 +180,13 @@
 				63C90DFC1F8C03C3003A5012 /* DeepLink.swift */,
 				63C90DFE1F8C0491003A5012 /* DeepLinkHandling.swift */,
 				63C90E001F8C04C8003A5012 /* DeepLinkHandler.swift */,
-				63C90E041F8C0526003A5012 /* Utils.swift */,
 				63C90E061F8C0598003A5012 /* DeepLinkPathPattern.swift */,
 				634109691F9540CA00274FAA /* DeepLinkQueryPattern.swift */,
 				634EC4F31F8C3AD40075091D /* DeepLinkPatternMatcher.swift */,
 				63C90E081F8C05B0003A5012 /* DeepLinkRoute.swift */,
 				63C90E0E1F8C060B003A5012 /* DeepLinkRouter.swift */,
+				630E77461F9AA80F002E25E4 /* Parser.swift */,
+				63C90E041F8C0526003A5012 /* Utils.swift */,
 				63BAF4BB1F7D7E310003DF2D /* Info.plist */,
 			);
 			path = Deeper;
@@ -122,6 +205,14 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
+		6355F2061FA28632000A608E /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6355F2191FA28633000A608E /* DeeperFunc.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		63BAF4B41F7D7E310003DF2D /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
@@ -133,6 +224,42 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
+		6355F2081FA28632000A608E /* DeeperFunc */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 6355F21E1FA28633000A608E /* Build configuration list for PBXNativeTarget "DeeperFunc" */;
+			buildPhases = (
+				6355F2041FA28632000A608E /* Sources */,
+				6355F2051FA28632000A608E /* Frameworks */,
+				6355F2061FA28632000A608E /* Headers */,
+				6355F2071FA28632000A608E /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = DeeperFunc;
+			productName = DeeperFunc;
+			productReference = 6355F2091FA28632000A608E /* DeeperFunc.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		6355F2101FA28633000A608E /* DeeperFuncTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 6355F21F1FA28633000A608E /* Build configuration list for PBXNativeTarget "DeeperFuncTests" */;
+			buildPhases = (
+				6355F20D1FA28633000A608E /* Sources */,
+				6355F20E1FA28633000A608E /* Frameworks */,
+				6355F20F1FA28633000A608E /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				6355F2141FA28633000A608E /* PBXTargetDependency */,
+			);
+			name = DeeperFuncTests;
+			productName = DeeperFuncTests;
+			productReference = 6355F2111FA28633000A608E /* DeeperFuncTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		63BAF4B61F7D7E310003DF2D /* Deeper */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 63BAF4BF1F7D7E310003DF2D /* Build configuration list for PBXNativeTarget "Deeper" */;
@@ -179,6 +306,15 @@
 				LastUpgradeCheck = 0900;
 				ORGANIZATIONNAME = "Ilya Puchka";
 				TargetAttributes = {
+					6355F2081FA28632000A608E = {
+						CreatedOnToolsVersion = 9.0.1;
+						LastSwiftMigration = 0900;
+						ProvisioningStyle = Automatic;
+					};
+					6355F2101FA28633000A608E = {
+						CreatedOnToolsVersion = 9.0.1;
+						ProvisioningStyle = Automatic;
+					};
 					63BAF4B61F7D7E310003DF2D = {
 						CreatedOnToolsVersion = 9.0;
 						LastSwiftMigration = 0900;
@@ -204,11 +340,27 @@
 			targets = (
 				63BAF4B61F7D7E310003DF2D /* Deeper */,
 				63BAF4C71F7D92220003DF2D /* DeeperTests */,
+				6355F2081FA28632000A608E /* DeeperFunc */,
+				6355F2101FA28633000A608E /* DeeperFuncTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		6355F2071FA28632000A608E /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		6355F20F1FA28633000A608E /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		63BAF4B51F7D7E310003DF2D /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -226,20 +378,45 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		6355F2041FA28632000A608E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6355F22B1FA4F91A000A608E /* String.swift in Sources */,
+				6355F2271FA28F87000A608E /* Router.swift in Sources */,
+				6355F2231FA28EF8000A608E /* Any.swift in Sources */,
+				6355F2251FA28F2A000A608E /* Query.swift in Sources */,
+				6309ADE81FA5F54500ADA0CE /* Maybe.swift in Sources */,
+				6355F22F1FA4FA6D000A608E /* Printer.swift in Sources */,
+				6355F2291FA294FE000A608E /* Path.swift in Sources */,
+				6355F2211FA28649000A608E /* Deeper.swift in Sources */,
+				6355F22D1FA4FA52000A608E /* Parser.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		6355F20D1FA28633000A608E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6355F2171FA28633000A608E /* DeeperFuncTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		63BAF4B21F7D7E310003DF2D /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				63BAF4C31F7D7E5B0003DF2D /* Deeper.swift in Sources */,
-				634EC4F41F8C3AD40075091D /* DeepLinkPatternMatcher.swift in Sources */,
-				63C90E0F1F8C060B003A5012 /* DeepLinkRouter.swift in Sources */,
-				63C90E091F8C05B0003A5012 /* DeepLinkRoute.swift in Sources */,
-				63C90DFF1F8C0491003A5012 /* DeepLinkHandling.swift in Sources */,
-				63C90E011F8C04C8003A5012 /* DeepLinkHandler.swift in Sources */,
-				63C90DFD1F8C03C4003A5012 /* DeepLink.swift in Sources */,
-				63C90E071F8C0598003A5012 /* DeepLinkPathPattern.swift in Sources */,
+				63E642361F9E8E4E0094CA73 /* DeepLinkHandler.swift in Sources */,
+				63E6423B1F9E8E4E0094CA73 /* DeepLinkRouter.swift in Sources */,
+				63E6423A1F9E8E4E0094CA73 /* DeepLinkRoute.swift in Sources */,
+				63E642371F9E8E4E0094CA73 /* DeepLinkPathPattern.swift in Sources */,
+				63E642351F9E8E4E0094CA73 /* DeepLinkHandling.swift in Sources */,
+				63E642391F9E8E4E0094CA73 /* DeepLinkPatternMatcher.swift in Sources */,
+				63E642341F9E8E4E0094CA73 /* DeepLink.swift in Sources */,
+				63E6423C1F9E8E4E0094CA73 /* Parser.swift in Sources */,
+				63E642381F9E8E4E0094CA73 /* DeepLinkQueryPattern.swift in Sources */,
+				63E642331F9E8E4E0094CA73 /* Deeper.swift in Sources */,
 				63C90E051F8C0526003A5012 /* Utils.swift in Sources */,
-				6341096A1F9540CA00274FAA /* DeepLinkQueryPattern.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -255,6 +432,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		6355F2141FA28633000A608E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 6355F2081FA28632000A608E /* DeeperFunc */;
+			targetProxy = 6355F2131FA28633000A608E /* PBXContainerItemProxy */;
+		};
 		63BAF4CF1F7D92230003DF2D /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 63BAF4B61F7D7E310003DF2D /* Deeper */;
@@ -263,6 +445,81 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		6355F21A1FA28633000A608E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_STYLE = Automatic;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = 4LTD6LARKC;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = DeeperFunc/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = ilya.puchka.DeeperFunc;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 4.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		6355F21B1FA28633000A608E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_STYLE = Automatic;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = 4LTD6LARKC;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = DeeperFunc/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = ilya.puchka.DeeperFunc;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 4.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		6355F21C1FA28633000A608E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 4LTD6LARKC;
+				INFOPLIST_FILE = DeeperFuncTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = ilya.puchka.DeeperFuncTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 4.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		6355F21D1FA28633000A608E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 4LTD6LARKC;
+				INFOPLIST_FILE = DeeperFuncTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = ilya.puchka.DeeperFuncTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 4.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 		63BAF4BD1F7D7E310003DF2D /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -452,6 +709,24 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		6355F21E1FA28633000A608E /* Build configuration list for PBXNativeTarget "DeeperFunc" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				6355F21A1FA28633000A608E /* Debug */,
+				6355F21B1FA28633000A608E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		6355F21F1FA28633000A608E /* Build configuration list for PBXNativeTarget "DeeperFuncTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				6355F21C1FA28633000A608E /* Debug */,
+				6355F21D1FA28633000A608E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		63BAF4B11F7D7E310003DF2D /* Build configuration list for PBXProject "Deeper" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
