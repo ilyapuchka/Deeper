@@ -91,7 +91,11 @@ extension String {
         if component == "*" {
             return [.any]
         } else if component.trimPrefix(":") {
-            return [.param(DeepLinkPatternParameter(component))]
+            if !component.isEmpty {
+                return [.param(DeepLinkPatternParameter(component))]
+            } else {
+                return []
+            }
         } else {
             let orComponents = component.components(separatedBy: "|", excludingDelimiterBetween: ("(", ")"))
             if orComponents.count > 1 {
@@ -104,8 +108,10 @@ extension String {
                 let components = component.components(separatedBy: "/", excludingDelimiterBetween: ("(", ")"))
                 if components.count > 1 {
                     return components.flatMap({ $0.pattern })
-                } else {
+                } else if !component.isEmpty {
                     return [.string(component)]
+                } else {
+                    return []
                 }
             }
         }
