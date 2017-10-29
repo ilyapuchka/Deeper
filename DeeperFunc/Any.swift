@@ -49,8 +49,8 @@ extension RoutePattern where S == Path {
         return .init(parse: parseRight(lhs, rhs), print: printRight(lhs, rhs), template: templateAnd(lhs, rhs))
     }
     
-    // param </ any
-    public static func </(lhs: RoutePattern, rhs: RoutePattern<Void, AnyEnd>) -> RoutePattern<A, AnyEnd> {
+    // param >/> any
+    public static func >/>(lhs: RoutePattern, rhs: RoutePattern<Void, AnyEnd>) -> RoutePattern<A, AnyEnd> {
         return .init(parse: parseLeft(lhs, rhs), print: printLeft(lhs, rhs), template: templateAnd(lhs, rhs))
     }
 
@@ -73,34 +73,34 @@ extension RoutePattern where S == Path {
         return lhs.consume(rhs)
     }
 
-    // param </ any (</ string)
-    public static func </(lhs: RoutePattern, rhs: @escaping (RoutePattern<Void, Path>) -> RoutePattern<Void, AnyStart>) -> AwaitingPattern<A, Void, A> {
+    // param >/> any (>/> string)
+    public static func >/>(lhs: RoutePattern, rhs: @escaping (RoutePattern<Void, Path>) -> RoutePattern<Void, AnyStart>) -> AwaitingPattern<A, Void, A> {
         return .init {
             let rhs = rhs($0)
             return .init(parse: parseLeft(lhs, rhs), print: printLeft(lhs, rhs), template: templateAnd(lhs, rhs))
         }
     }
 
-    // param </ any (</ string)
-    public static func </(lhs: RoutePattern, rhs: RoutePattern<Void, AnyStart>) -> RoutePattern {
+    // param >/> any (>/> string)
+    public static func >/>(lhs: RoutePattern, rhs: RoutePattern<Void, AnyStart>) -> RoutePattern {
         return .init(parse: parseLeft(lhs, rhs), print: printLeft(lhs, rhs), template: templateAnd(lhs, rhs))
     }
     
-    // (param </) any </ string
-    public static func </(lhs: AwaitingPattern<A, Void, A>, rhs: RoutePattern<Void, Path>) -> RoutePattern<A, Path> {
+    // (param >/>) any >/> string
+    public static func >/>(lhs: AwaitingPattern<A, Void, A>, rhs: RoutePattern<Void, Path>) -> RoutePattern<A, Path> {
         return lhs.consume(rhs)
     }
 
-    // param </ any (</> param)
-    public static func </<B>(lhs: RoutePattern<A, Path>, rhs: @escaping (RoutePattern<B, Path>) -> RoutePattern<B, AnyStart>) -> AwaitingPattern<A, B, (A, B)> {
+    // param >/> any (>/> param)
+    public static func >/><B>(lhs: RoutePattern<A, Path>, rhs: @escaping (RoutePattern<B, Path>) -> RoutePattern<B, AnyStart>) -> AwaitingPattern<A, B, (A, B)> {
         return .init {
             let rhs = rhs($0)
             return .init(parse: parseBoth(lhs, rhs), print: printBoth(lhs, rhs), template: templateAnd(lhs, rhs))
         }
     }
     
-    // (param </ any) </> param
-    public static func </><B>(lhs: AwaitingPattern<A, B, (A, B)>, rhs: RoutePattern<B, Path>) -> RoutePattern<(A, B), Path> {
+    // (param >/> any) >/> param
+    public static func >/><B>(lhs: AwaitingPattern<A, B, (A, B)>, rhs: RoutePattern<B, Path>) -> RoutePattern<(A, B), Path> {
         return lhs.consume(rhs)
     }
 

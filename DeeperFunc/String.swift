@@ -26,8 +26,8 @@ extension String {
         return lit(lhs) /> rhs
     }
     
-    public static func </<A>(lhs: RoutePattern<A, Path>, rhs: String) -> RoutePattern<A, Path> {
-        return lhs </ lit(rhs)
+    public static func >/><A>(lhs: RoutePattern<A, Path>, rhs: String) -> RoutePattern<A, Path> {
+        return lhs >/> lit(rhs)
     }
     
     public static func |(lhs: String, rhs: String) -> RoutePattern<Void, Path> {
@@ -64,8 +64,8 @@ extension String {
         return lit(lhs) /> rhs
     }
     
-    // (param </) any </ string
-    public static func </<L>(lhs: AwaitingPattern<L, Void, L>, rhs: String) -> RoutePattern<L, Path> {
+    // (param >/>) any >/> string
+    public static func >/><L>(lhs: AwaitingPattern<L, Void, L>, rhs: String) -> RoutePattern<L, Path> {
         return lhs.consume(lit(rhs))
     }
     

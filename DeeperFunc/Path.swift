@@ -36,12 +36,10 @@ public let string: RoutePattern<String, Path> = pathParam({ $0 }, { $0 })
 public let int: RoutePattern<Int, Path> = pathParam(Int.init, String.init)
 public let double: RoutePattern<Double, Path> = pathParam(Double.init, String.init)
 
-// concatenate and ignore left parameter (to drop left Void)
+// drop left param
 infix operator /> : MultiplicationPrecedence
-// concatenate and ignore right parameter (to drop right Void)
-infix operator </ : MultiplicationPrecedence
-// concatenate and use both parameters
-infix operator </> : MultiplicationPrecedence
+// carry on left param
+infix operator >/> : MultiplicationPrecedence
 
 func and(_ lhs: RoutePattern<Void, Path>, _ rhs: RoutePattern<Void, Path>) -> RoutePattern<Void, Path> {
     return .init(parse: parseRight(lhs, rhs), print: printRight(lhs, rhs), template: templateAnd(lhs, rhs))
@@ -53,7 +51,7 @@ extension RoutePattern where S == Path {
         return .init(parse: parseAny(lhs, rhs), print: printAny(lhs, rhs), template: templateOr(lhs, rhs))
     }
 
-    public static func </(lhs: RoutePattern, rhs: RoutePattern<Void, S>) -> RoutePattern {
+    public static func >/>(lhs: RoutePattern, rhs: RoutePattern<Void, S>) -> RoutePattern {
         return .init(parse: parseLeft(lhs, rhs), print: printLeft(lhs, rhs), template: templateAnd(lhs, rhs))
     }
     
@@ -61,7 +59,7 @@ extension RoutePattern where S == Path {
         return .init(parse: parseRight(lhs, rhs), print: printRight(lhs, rhs), template: templateAnd(lhs, rhs))
     }
     
-    public static func </><B>(lhs: RoutePattern, rhs: RoutePattern<B, S>) -> RoutePattern<(A, B), S> {
+    public static func >/><B>(lhs: RoutePattern, rhs: RoutePattern<B, S>) -> RoutePattern<(A, B), S> {
         return .init(parse: parseBoth(lhs, rhs), print: printBoth(lhs, rhs), template: templateAnd(lhs, rhs))
     }
 

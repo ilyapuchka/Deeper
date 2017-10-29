@@ -107,7 +107,7 @@ class DeeperFuncTests: XCTestCase {
     }
     
     func testRouteWithPathParamAndQuery() {
-        router.add(Intent.pathAndQueryParams, "recipes" /> int </> string .? int("recipeId") & string("t"))
+        router.add(Intent.pathAndQueryParams, "recipes" /> int >/> string .? int("recipeId") & string("t"))
         
         AssertMatch(Intent.pathAndQueryParams(123, "abc", 456, "A"), "http://recipes/123/abc?recipeId=456&t=A")
         AssertMatch(Intent.pathAndQueryParams(123, "abc", 456, "A"), "http://recipes/123/abc?t=A&recipeId=456")
@@ -126,7 +126,7 @@ class DeeperFuncTests: XCTestCase {
         AssertNotMatch("http://subscription/true")
         AssertNotMatch("http://subscription/abc/123")
         
-        router.add(Intent.twoParams, "subscription" /> int </ "menu" </> string)
+        router.add(Intent.twoParams, "subscription" /> int >/> "menu" >/> string)
         AssertMatch(Intent.twoParams(123, "abc"), "http://subscription/123/menu/abc")
         AssertNotMatch("http://subscription/abc/menu/123")
     }
@@ -138,46 +138,46 @@ class DeeperFuncTests: XCTestCase {
         AssertNotMatch("http://recipes/id/data/abc")
 
         router = Router()
-        router.add(Intent.anyMiddleParam, "recipes" /> "id" /> any /> int </ "data" </ "abc")
+        router.add(Intent.anyMiddleParam, "recipes" /> "id" /> any /> int >/> "data" >/> "abc")
         
         AssertMatch(Intent.anyMiddleParam(123), "http://recipes/id/foo/123/data/abc")
         AssertNotMatch("http://recipes/id/foo/123/456/data/abc")
         AssertNotMatch("http://recipes/id/123/data/abc")
 
         router = Router()
-        router.add(Intent.anyMiddleParam, "recipes" /> "id" /> any /> "data" /> int </ "abc")
+        router.add(Intent.anyMiddleParam, "recipes" /> "id" /> any /> "data" /> int >/> "abc")
         
         AssertMatch(Intent.anyMiddleParam(456), "http://recipes/id/123/data/456/abc")
         AssertNotMatch("http://recipes/id/foo/data/abc")
 
         router = Router()
-        router.add(Intent.anyMiddleParam, "recipes" /> "id" /> int </ any </ "data" </ "abc")
+        router.add(Intent.anyMiddleParam, "recipes" /> "id" /> int >/> any >/> "data" >/> "abc")
         
         AssertMatch(Intent.anyMiddleParam(123), "http://recipes/id/123/abc/foo/data/abc")
         AssertNotMatch("http://recipes/id/foo/data/abc")
 
         router = Router()
-        router.add(Intent.anyMiddleParam, "recipes" /> int </ "id" </ any </ "data" </ "abc")
+        router.add(Intent.anyMiddleParam, "recipes" /> int >/> "id" >/> any >/> "data" >/> "abc")
         
         AssertMatch(Intent.anyMiddleParam(123), "http://recipes/123/id/foo/data/abc")
         AssertNotMatch("http://recipes/id/abc/foo/data/abc")
         
         router = Router()
-        router.add(Intent.anyMiddleParams, "recipes" /> "id" /> int </ any </ "data" </> int </ "abc")
+        router.add(Intent.anyMiddleParams, "recipes" /> "id" /> int >/> any >/> "data" >/> int >/> "abc")
         
         AssertMatch(Intent.anyMiddleParams(123, 456), "http://recipes/id/123/foo/data/456/abc")
         
         router = Router()
-        router.add(Intent.anyMiddleParams, "recipes" /> "id" /> int </ any </ "data" </ any </> int </ "abc")
+        router.add(Intent.anyMiddleParams, "recipes" /> "id" /> int >/> any >/> "data" >/> any >/> int >/> "abc")
         AssertMatch(Intent.anyMiddleParams(123, 456), "http://recipes/id/123/foo/data/bar/456/abc")
 
         router = Router()
-        router.add(Intent.anyMiddleParams, "recipes" /> int </ "id" </ any </> int </ "data" </ "abc")
+        router.add(Intent.anyMiddleParams, "recipes" /> int >/> "id" >/> any >/> int >/> "data" >/> "abc")
 
         AssertMatch(Intent.anyMiddleParams(123, 456), "http://recipes/123/id/foo/456/data/abc")
         
         router = Router()
-        router.add(Intent.anyMiddleParams, "recipes" /> "id" /> int </ any </> int </ "data" </ "abc")
+        router.add(Intent.anyMiddleParams, "recipes" /> "id" /> int >/> any >/> int >/> "data" >/> "abc")
         
         AssertMatch(Intent.anyMiddleParams(123, 456), "http://recipes/id/123/foo/456/data/abc")
     }
@@ -190,11 +190,11 @@ class DeeperFuncTests: XCTestCase {
         AssertNotMatch("http://123/data/data/abc")
 
         router = Router()
-        router.add(Intent.anyStartParam, any /> int </ "data" </ "abc")
+        router.add(Intent.anyStartParam, any /> int >/> "data" >/> "abc")
         AssertMatch(Intent.anyStartParam(123), "http://foo/123/data/abc")
 
         router = Router()
-        router.add(Intent.anyStartParam, any /> "data" /> int </ "abc")
+        router.add(Intent.anyStartParam, any /> "data" /> int >/> "abc")
         AssertMatch(Intent.anyStartParam(123), "http://foo/data/123/abc")
     }
 
@@ -212,11 +212,11 @@ class DeeperFuncTests: XCTestCase {
         AssertNotMatch("http://data/abc")
 
         router = Router()
-        router.add(Intent.anyEndParam, "data" /> "abc" /> int </ any)
+        router.add(Intent.anyEndParam, "data" /> "abc" /> int >/> any)
         AssertMatch(Intent.anyEndParam(123), "http://data/abc/123/456/abc")
 
         router = Router()
-        router.add(Intent.anyEndParam, "data" /> int </ "abc" </ any)
+        router.add(Intent.anyEndParam, "data" /> int >/> "abc" >/> any)
         AssertMatch(Intent.anyEndParam(123), "http://data/123/abc/456/abc")
         
         router = Router()
@@ -231,7 +231,7 @@ class DeeperFuncTests: XCTestCase {
         AssertMatch(Intent.orPattern, "http://recipes/info")
         AssertNotMatch("http://recipes/foo")
         
-        router.add(Intent.eitherIntOrString, "recipes" /> ( int </ "info" | "data" /> string ) )
+        router.add(Intent.eitherIntOrString, "recipes" /> ( int >/> "info" | "data" /> string ) )
         
         AssertMatch(Intent.eitherIntOrString(.right("abc")), "http://recipes/data/abc")
         AssertMatch(Intent.eitherIntOrString(.left(123)), "http://recipes/123/info")
@@ -259,7 +259,7 @@ class DeeperFuncTests: XCTestCase {
         AssertNotMatch("http://recipes/data/abc/info")
         
         router = Router()
-        router.add(Intent.optionalParam, "recipes" /? int </ "info")
+        router.add(Intent.optionalParam, "recipes" /? int >/> "info")
 
         AssertMatch(Intent.optionalParam(123), "http://recipes/123/info")
         AssertMatch(Intent.optionalParam(nil), "http://recipes/info")
@@ -280,19 +280,19 @@ class DeeperFuncTests: XCTestCase {
     }
     
     func testTemplates() {
-        let route = "recipes" /> (("info" | "archive") | string) </ "data"
+        let route = "recipes" /> (("info" | "archive") | string) >/> "data"
         XCTAssertEqual(route.template, "recipes/((info|archive)|:string)/data")
 
-        let paramRoute = "recipes" /> int /? "data"  </> string
+        let paramRoute = "recipes" /> int /? "data"  >/> string
         XCTAssertEqual(paramRoute.template, "recipes/:int/(data)/:string")
 
-        let queryRoute = "recipes" /> int </ "data" </> string .? int("recipeId") & string("s") & bool("b")
+        let queryRoute = "recipes" /> int >/> "data" >/> string .? int("recipeId") & string("s") & bool("b")
         XCTAssertEqual(queryRoute.template, "recipes/:int/data/:string?recipeId=:int&s=:string&b=:bool")
 
         let complexRoute = "recipes" .? int("recipeId") & string("s") & (bool("b") | int("i"))
         XCTAssertEqual(complexRoute.template, "recipes?recipeId=:int&s=:string&(b=:bool|i=:int)")
         
-        let anyRoute = any /> "recipes" /> any /> int </ "data" </> string </ any </ "info" </ any
+        let anyRoute = any /> "recipes" /> any /> int >/> "data" >/> string >/> any >/> "info" >/> any
         XCTAssertEqual(anyRoute.template, "*/recipes/*/:int/data/:string/*/info/*")
     }
 }
