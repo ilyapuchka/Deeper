@@ -50,9 +50,14 @@ extension DeepLinkHandler {
 
 open class AnyDeepLinkHandler<Intent>: DeepLinkHandler {
     
-    open var deeplinkHandling: DeepLinkHandling<Intent>?
+    open var deeplinkHandling: DeepLinkHandling<Intent>? {
+        didSet {
+            _setDeeplinkHandling(deeplinkHandling)
+        }
+    }
     
     private let _open: (DeepLink<Intent>, Bool) -> DeepLinkHandling<Intent>
+    private let _setDeeplinkHandling: (DeepLinkHandling<Intent>?) -> Void
     
     public init() {
         guard type(of: self) != AnyDeepLinkHandler<Intent>.self else {
@@ -61,11 +66,15 @@ open class AnyDeepLinkHandler<Intent>: DeepLinkHandler {
         self._open = { _, _ in
             fatalError("Do not call `super.open(deeplink:animated:) -> DeepLinkHandling<Intent>` when inheriting from AnyDeepLinkHandler")
         }
+        self._setDeeplinkHandling = { _ in }
     }
     
     /// Use this initialiser to wrap instances that are not subclasses of `AnyDeepLinkHandler`.
     public init<Handler: DeepLinkHandler>(_ handler: Handler) where Handler.Intent == Intent {
-        self._open = {
+        self._setDeeplinkHandling = { [unowned handler] deeplinkHandling in
+            handler.deeplinkHandling = deeplinkHandling
+        }
+        self._open = { [unowned handler] in
             let handling = handler.open(deeplink: $0, animated: $1)
             switch handling {
             case let .delayed(deeplink, animated, effect):

@@ -8,9 +8,10 @@
 
 import Foundation
 
-public class Router<U>: CustomStringConvertible {
+public class Router<U>: DeepLinkRouter, CustomStringConvertible {
+    public var rootDeepLinkHandler: AnyDeepLinkHandler<U>?
     
-    public var routes: [(URLRequest) -> U?] = []
+    public var routes: [(URL) -> U?] = []
     public var templates: [String] = []
     
     public init() {}
@@ -19,28 +20,28 @@ public class Router<U>: CustomStringConvertible {
         return "\(type(of: self)):\n" + templates.filter({ !$0.isEmpty }).joined(separator: "\n")
     }
     
-    public func match(_ request: URLRequest) -> U? {
+    public func openURL(_ url: URL) -> U? {
         for route in routes {
-            if let intent = route(request) { return intent }
+            if let intent = route(url) { return intent }
         }
         return nil
     }
 
     @discardableResult
-    func add(_ route: @escaping (URLRequest) -> U?) -> Router {
+    func add(_ route: @escaping (URL) -> U?) -> Router {
         routes.append(route)
         return self
     }
     
     @discardableResult
     public func add(_ intent: U, _ route: String) -> Router {
-        return add(intent, (lit(route) as RoutePattern<Void, Path>))
+        return add(intent, lit(route))
     }
     
     @discardableResult
     public func add<S: ClosedPatternState>(_ intent: U, _ route: RoutePattern<Void, S>) -> Router {
-        add({ request in
-            route.parse(routeComponents(from: request))
+        add({ url in
+            route.parse(routeComponents(from: url))
                 .flatMap({ $0.rest.path.isEmpty ? intent : nil })
         })
         templates.append(route.template)
@@ -49,8 +50,8 @@ public class Router<U>: CustomStringConvertible {
     
     @discardableResult
     public func add<A, S: ClosedPatternState>(_ intent: @escaping (A) -> U, _ route: RoutePattern<A, S>) -> Router {
-        add({ request in
-            route.parse(routeComponents(from: request))
+        add({ url in
+            route.parse(routeComponents(from: url))
                 .flatMap({ $0.rest.path.isEmpty ? $0.match : nil })
                 .map(intent)
         })
@@ -60,8 +61,8 @@ public class Router<U>: CustomStringConvertible {
     
     @discardableResult
     public func add<A, B, C, S: ClosedPatternState>(_ intent: @escaping (A, B, C) -> U, _ route: RoutePattern<((A, B), C), S>) -> Router {
-        add({ request in
-            route.parse(routeComponents(from: request))
+        add({ url in
+            route.parse(routeComponents(from: url))
                 .flatMap({ $0.rest.path.isEmpty ? $0.match : nil })
                 .map(flatten)
                 .map(intent)
@@ -73,8 +74,8 @@ public class Router<U>: CustomStringConvertible {
     
     @discardableResult
     public func add<A, B, C, D, S: ClosedPatternState>(_ intent: @escaping (A, B, C, D) -> U, _ route: RoutePattern<(((A, B), C), D), S>) -> Router {
-        add({ request in
-            route.parse(routeComponents(from: request))
+        add({ url in
+            route.parse(routeComponents(from: url))
                 .flatMap({ $0.rest.path.isEmpty ? $0.match : nil })
                 .map(flatten)
                 .map(intent)
@@ -85,8 +86,8 @@ public class Router<U>: CustomStringConvertible {
     
     @discardableResult
     public func add<A, B, C, D, E, S: ClosedPatternState>(_ intent: @escaping (A, B, C, D, E) -> U, _ route: RoutePattern<((((A, B), C), D), E), S>) -> Router {
-        add({ request in
-            route.parse(routeComponents(from: request))
+        add({ url in
+            route.parse(routeComponents(from: url))
                 .flatMap({ $0.rest.path.isEmpty ? $0.match : nil })
                 .map(flatten)
                 .map(intent)
@@ -118,8 +119,8 @@ func flatten<A, B, C, D, E, F>(_ t: (((((A, B), C), D), E), F)) -> (A, B, C, D, 
     return (t.0.0.0.0.0, t.0.0.0.0.1, t.0.0.0.1, t.0.0.1, t.0.1, t.1)
 }
 
-private func routeComponents(from request: URLRequest) -> RouteComponents {
-    guard let components = request.url.flatMap({ URLComponents(url: $0, resolvingAgainstBaseURL: false) }) else {
+private func routeComponents(from url: URL) -> RouteComponents {
+    guard let components = URLComponents(url: url, resolvingAgainstBaseURL: false) else {
         return ([], [:])
     }
     let path = [components.host].flatMap({ $0 }) + components.path.components(separatedBy: "/").filter({ !$0.isEmpty })

@@ -151,3 +151,14 @@ extension String {
     }
 }
 
+extension Array where Element == DeepLinkPathPattern {
+    
+    var route: DeepLinkRoute {
+        if count == 1, case .string(let str)? = first {
+            return [.string(str)]
+        } else {
+            return DeepLinkRoute(pattern: self)
+        }
+    }
+    
+}
