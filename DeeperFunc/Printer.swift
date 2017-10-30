@@ -23,7 +23,7 @@ func printBoth<L, R, LS, RS>(_ lhs: RoutePattern<L, LS>, _ rhs: RoutePattern<R, 
         if let lhs = lhs.print($0.0), let rhs = rhs.print($0.1) {
             return RouteComponents(lhs.path + rhs.path, lhs.query.merging(rhs.query, uniquingKeysWith: { $1 }))
         } else {
-            return lhs.print($0.0) ?? rhs.print($0.1)
+            return nil
         }
     }
 }
@@ -47,6 +47,14 @@ func printAny<A, S>(_ lhs: RoutePattern<A, S>, _ rhs: RoutePattern<A, S>) -> Pri
         }
         return lhs.print($0) ?? rhs.print($0)
     }
+}
+
+func pathParamTemplate<A>(_ type: A.Type) -> String {
+    return ":\(typeKey(type))"
+}
+
+func queryParamTemplate<A>(_ type: A.Type, key: String) -> String {
+    return "\(key)=:\(typeKey(type))"
 }
 
 func templateAnd<A, B>(_ lhs: RoutePattern<A, Path>, _ rhs: RoutePattern<B, Path>) -> String {

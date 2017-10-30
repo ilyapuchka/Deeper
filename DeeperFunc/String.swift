@@ -8,6 +8,10 @@
 
 import Foundation
 
+func and(_ lhs: RoutePattern<Void, Path>, _ rhs: RoutePattern<Void, Path>) -> RoutePattern<Void, Path> {
+    return .init(parse: parseRight(lhs, rhs), print: printRight(lhs, rhs), template: templateAnd(lhs, rhs))
+}
+
 extension String {
     
     public static func />(lhs: String, rhs: String) -> RoutePattern<Void, Path> {

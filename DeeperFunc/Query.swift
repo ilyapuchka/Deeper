@@ -14,12 +14,12 @@ infix operator .? : MultiplicationPrecedence
 func queryParam<A>(_ key: String, _ apply: @escaping (String) -> A?, _ unapply: @escaping (A) -> String?) -> RoutePattern<A, Query> {
     return .init(
         parse: { route in
-            guard let queryValue = route.query[key], let parsed = apply(queryValue) else { return nil }
+            guard let queryValue = route.query[key]?.removingPercentEncoding, let parsed = apply(queryValue) else { return nil }
             return (route, parsed)
     }, print: { a in
         guard let value = unapply(a) else { return RouteComponents(path: [], query: [:]) }
         return RouteComponents(path: [], query: [key: value])
-    }, template: "\(key)=:\(typeKey(A.self))")
+    }, template: queryParamTemplate(A.self, key: key))
 }
 
 public func string(_ key: String) -> RoutePattern<String, Query> {
@@ -35,7 +35,21 @@ public func double(_ key: String) -> RoutePattern<Double, Query> {
 }
 
 public func bool(_ key: String) -> RoutePattern<Bool, Query> {
-    return queryParam(key, { $0 == "1" ? true : $0 == "0" ? false : Bool($0.lowercased()) }, { $0 ? "true" : "false" })
+    return queryParam(key, Bool.fromString, Bool.toString)
+}
+
+extension Bool {
+    static func fromString(_ stringValue: String) -> Bool? {
+        switch stringValue {
+        case "0": return false
+        case "1": return true
+        default: return Bool(stringValue.lowercased())
+        }
+    }
+    
+    static func toString(_ boolValue: Bool) -> String {
+        return boolValue ? "true" : "false"
+    }
 }
 
 extension RoutePattern where S == Query {

@@ -26,6 +26,17 @@ public struct RoutePattern<A/*pattern type*/, S: PatternState> {
     public let parse: Parser<A> // parses path components exctracting underlying type of pattern
     public let print: Printer<A> // converts pattern with passed in value to template component
     public let template: String
+    
+    func map<B, S>(_ apply: @escaping (A) -> B?, _ unapply: @escaping (B) -> A?) -> RoutePattern<B, S> {
+        let (parse, print) = (self.parse, self.print)
+        return .init(parse: {
+            guard let result = parse($0), let match = apply(result.1) else { return nil }
+            return (result.0, match)
+        }, print: {
+            guard let value = unapply($0) else { return nil }
+            return print(value)
+        }, template: template)
+    }
 }
 
 // converts generic type to it's string representation, removing Optional and Either wrappers
@@ -48,4 +59,17 @@ func typeKey<A>(_ a: A.Type) -> String {
     }
     
     return typeKey
+}
+
+// drops either lhs or rhs if they are Void
+func flatten(_ lhs: Any, _ rhs: Any) -> Any {
+    if lhs is Void, rhs is Void {
+        return ()
+    } else if lhs is Void {
+        return rhs
+    } else if rhs is Void {
+        return lhs
+    } else {
+        return (lhs, rhs)
+    }
 }

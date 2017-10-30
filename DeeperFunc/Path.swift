@@ -23,11 +23,11 @@ func pathParam<A>(_ apply: @escaping (String) -> A?, _ unapply: @escaping (A) ->
     return .init(
         parse: { route in
             guard let pathComponent = route.path.first?.removingPercentEncoding, let parsed = apply(pathComponent) else { return nil }
-            return (RouteComponents(path: Array(route.path.dropFirst()), query: route.1), parsed)
+            return ((Array(route.path.dropFirst()), route.1), parsed)
     },
         print: { a in
             return RouteComponents(path: [unapply(a)].flatMap({ $0 }), query: [:])
-    }, template: ":\(typeKey(A.self))")
+    }, template: pathParamTemplate(A.self))
 }
 
 // These are params transformations
@@ -40,10 +40,6 @@ public let double: RoutePattern<Double, Path> = pathParam(Double.init, String.in
 infix operator /> : MultiplicationPrecedence
 // carry on left param
 infix operator >/> : MultiplicationPrecedence
-
-func and(_ lhs: RoutePattern<Void, Path>, _ rhs: RoutePattern<Void, Path>) -> RoutePattern<Void, Path> {
-    return .init(parse: parseRight(lhs, rhs), print: printRight(lhs, rhs), template: templateAnd(lhs, rhs))
-}
 
 extension RoutePattern where S == Path {
 
