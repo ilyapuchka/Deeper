@@ -27,16 +27,26 @@ public struct RoutePattern<A/*pattern type*/, S: PatternState> {
     public let print: Printer<A> // converts pattern with passed in value to template component
     public let template: String
     
-    func map<B, S>(_ apply: @escaping (A) -> B?, _ unapply: @escaping (B) -> A?) -> RoutePattern<B, S> {
-        let (parse, print) = (self.parse, self.print)
+//    func map<B, S>(_ iso: PartialIso<A, B>) -> RoutePattern<B, S> {
+//        return .init(parse: {
+//            guard let result = self.parse($0), let match = iso.apply(result.1) else { return nil }
+//            return (result.0, match)
+//        }, print: {
+//            guard let value = iso.unapply($0) else { return nil }
+//            return self.print(value)
+//        }, template: template)
+//    }
+    
+    func map<S>(_ iso: PartialIso<A, Any>) -> RoutePattern<Any, S> {
         return .init(parse: {
-            guard let result = parse($0), let match = apply(result.1) else { return nil }
-            return (result.0, match)
+            guard let result = self.parse($0) else { return nil }
+            return (result.0, result.1)
         }, print: {
-            guard let value = unapply($0) else { return nil }
-            return print(value)
+            guard let value = iso.unapply($0) else { return nil }
+            return self.print(value)
         }, template: template)
     }
+
 }
 
 // converts generic type to it's string representation, removing Optional and Either wrappers

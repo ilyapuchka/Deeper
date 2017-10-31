@@ -236,7 +236,7 @@ class DeeperFuncTests: XCTestCase {
         XCTAssertEqual(anyRoute.template, "*/recipes/*/:int/data/:string/*/info/*")
     }
     
-    func AssertFormat(_ format: String, matches url: String, print values: Any, router: (Router<Intent>, String) -> Router<Intent>, file: StaticString = #file, line: UInt = #line) {
+    func AssertFormat(_ format: String, matches url: String, print values: Any, intent: Intent, router: (Router<Intent>, String) -> Router<Intent>, file: StaticString = #file, line: UInt = #line) {
         let url = URL(string: url)!
         let path = (url.host ?? "") + url.path
         let query = url.query ?? ""
@@ -251,16 +251,35 @@ class DeeperFuncTests: XCTestCase {
 
         let router = router(Router<Intent>(), format)
         let result = router.openURL(url)
-        XCTAssertNotNil(result, "Failed to match url", file: file, line: line)
+        XCTAssertEqual(result, intent, "Failed to match url", file: file, line: line)
     }
 
     func testStringFormat() {
-        AssertFormat("recipe/info", matches: "http://recipe/info", print: (()), router: { $0.add(Intent.empty, format: $1) })
-        AssertFormat("recipe/:int", matches: "http://recipe/123", print: 123, router: { $0.add(Intent.singleParam, format: $1) })
-        AssertFormat("recipe/:int/:string", matches: "http://recipe/123/abc", print: (123, "abc"), router: { $0.add(Intent.twoParams, format: $1) })
+        AssertFormat("recipe/info",
+                     matches: "http://recipe/info",
+                     print: (()),
+                     intent: Intent.empty,
+                     router: { $0.add(Intent.empty, format: $1) }
+        )
+        
+        AssertFormat("recipe/:int",
+                     matches: "http://recipe/123",
+                     print: 123,
+                     intent: Intent.singleParam(123),
+                     router: { $0.add(Intent.singleParam, format: $1) }
+        )
+        
+        AssertFormat("recipe/:int/:string",
+                     matches: "http://recipe/123/abc",
+                     print: (123, "abc"),
+                     intent: Intent.twoParams(123, "abc"),
+                     router: { $0.add(Intent.twoParams, format: $1) }
+        )
+        
         AssertFormat("recipe/:int/menu/:string?t=:int&locale=:string",
                      matches: "http://recipe/123/menu/abc?t=456&locale=en",
                      print: (((123, "abc"), 456), "en"),
+                     intent: Intent.pathAndQueryParams(123, "abc", 456, "en"),
                      router: { $0.add4(Intent.pathAndQueryParams, format: $1) }
         )
     }
