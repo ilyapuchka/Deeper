@@ -33,6 +33,20 @@ public struct PartialIso<A, B> {
         )
     }
     
+    var someB: PartialIso<A, B?> {
+        return .init(
+            apply: apply,
+            unapply: { $0.flatMap(self.unapply) }
+        )
+    }
+    
+    var someA: PartialIso<A?, B> {
+        return .init(
+            apply: { $0.flatMap(self.apply) },
+            unapply: unapply
+        )
+    }
+
 }
 
 extension PartialIso where A == Void, B == Any {

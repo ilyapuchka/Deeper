@@ -12,16 +12,7 @@ func maybe(_ route: RoutePattern<Void, Path>) -> RoutePattern<Void, Path> {
     return .init(parse: { route.parse($0) ?? ($0, ()) }, print: route.print, template: "(\(route.template))")
 }
 
-func maybe<A>(_ route: RoutePattern<A, Path>) -> RoutePattern<A?, Path> {
-    return .init(parse: { url in
-        guard let result = route.parse(url) else { return (url, nil) }
-        return (result.rest, .some(result.match))
-    }, print: {
-        return $0.flatMap(route.print)
-    }, template: "(\(route.template))")
-}
-
-func maybe<A>(_ route: RoutePattern<A, Query>) -> RoutePattern<A?, Query> {
+func maybe<A, S>(_ route: RoutePattern<A, S>) -> RoutePattern<A?, S> {
     return .init(parse: { url in
         guard let result = route.parse(url) else { return (url, nil) }
         return (result.rest, .some(result.match))

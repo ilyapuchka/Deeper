@@ -257,7 +257,7 @@ class DeeperFuncTests: XCTestCase {
     func testStringFormat() {
         AssertFormat("recipe/info",
                      matches: "http://recipe/info",
-                     print: (()),
+                     print: (),
                      intent: Intent.empty,
                      router: { $0.add(Intent.empty, format: $1) }
         )
@@ -282,5 +282,12 @@ class DeeperFuncTests: XCTestCase {
                      intent: Intent.pathAndQueryParams(123, "abc", 456, "en"),
                      router: { $0.add4(Intent.pathAndQueryParams, format: $1) }
         )
+        
+        AssertFormat("recipes/data/(info)?(t=:int)",
+                     matches: "http://recipes/data/info?t=1",
+                     print: (1),
+                     intent: Intent.singleParam(1),
+                     router: { $0.add(Intent.singleParam, format: $1) }
+                     )
     }
 }

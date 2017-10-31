@@ -129,12 +129,7 @@ public class Router<U>: DeepLinkRouter, CustomStringConvertible {
                 .flatMap({ $0.rest.path.isEmpty ? $0.match : nil })
                 .flatMap({ $0 as? (((A, B), C), D) })
                 .map(flatten)
-                .map({
-                    print(($0, $1, $2, $3))
-                    let result = intent($0, $1, $2, $3)
-                    return result
-                    }
-                    )
+                .map(intent)
         })
         templates.append(route.template)
         return self
