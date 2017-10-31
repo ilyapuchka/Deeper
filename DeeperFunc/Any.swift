@@ -27,8 +27,9 @@ public func any<A>(_ next: RoutePattern<A, Path>) -> RoutePattern<A, AnyStart> {
             }
             return nil
     },
-        print: { _ in
-            return RouteComponents(path: ["*"], query: [:])
+        print: {
+            guard let nextResult = next.print($0) else { return nil }
+            return RouteComponents(["*"] + nextResult.path, query: [:])
     }, template: "*/\(next.template)")
 }
 
@@ -117,5 +118,3 @@ extension RoutePattern where S == Query {
     }
 
 }
-
-

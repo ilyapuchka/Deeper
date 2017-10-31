@@ -288,6 +288,13 @@ class DeeperFuncTests: XCTestCase {
                      print: (1),
                      intent: Intent.singleParam(1),
                      router: { $0.add(Intent.singleParam, format: $1) }
+        )
+        
+        AssertFormat("recipes/*/data/:int",
+                     matches: "http://recipes/*/data/1",
+                     print: (1),
+                     intent: Intent.singleParam(1),
+                     router: { $0.add(Intent.singleParam, format: $1) }
                      )
     }
 }

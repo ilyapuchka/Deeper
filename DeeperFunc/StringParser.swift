@@ -67,7 +67,7 @@ private let anyPath: StringParser<Path> = { components in
     guard let result = parseComponents([components[1]], parsers: intPath, doublePath, stringPath, litPath) else { return nil }
     guard !result.match.isEmpty else { return nil }
     
-    return (result.rest, any(result.match[0]).map(.id))
+    return (Array(components.suffix(from: 2)), any(result.match[0]).map(.id))
 }
 
 private func parsePathComponents(_ components: [String]) -> [RoutePattern<Any, Path>]? {
