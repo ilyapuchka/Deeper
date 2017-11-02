@@ -14,7 +14,6 @@
 		6309ADF81FA64F4100ADA0CE /* DeepLinkHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63C90E001F8C04C8003A5012 /* DeepLinkHandler.swift */; };
 		6309ADF91FA64F4100ADA0CE /* DeepLinkRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6309ADF41FA64D3200ADA0CE /* DeepLinkRouter.swift */; };
 		634EC4F61F8D653E0075091D /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 634EC4F51F8D653E0075091D /* Utils.swift */; };
-		635363281FA8B063008E7FC8 /* PartialIso.swift in Sources */ = {isa = PBXBuildFile; fileRef = 635363271FA8B063008E7FC8 /* PartialIso.swift */; };
 		6355F2121FA28633000A608E /* DeeperFunc.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6355F2091FA28632000A608E /* DeeperFunc.framework */; };
 		6355F2171FA28633000A608E /* DeeperFuncTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6355F2161FA28633000A608E /* DeeperFuncTests.swift */; };
 		6355F2191FA28633000A608E /* DeeperFunc.h in Headers */ = {isa = PBXBuildFile; fileRef = 6355F20B1FA28632000A608E /* DeeperFunc.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -72,7 +71,6 @@
 		634109691F9540CA00274FAA /* DeepLinkQueryPattern.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepLinkQueryPattern.swift; sourceTree = "<group>"; };
 		634EC4F31F8C3AD40075091D /* DeepLinkPatternMatcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepLinkPatternMatcher.swift; sourceTree = "<group>"; };
 		634EC4F51F8D653E0075091D /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
-		635363271FA8B063008E7FC8 /* PartialIso.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PartialIso.swift; sourceTree = "<group>"; };
 		6355F2091FA28632000A608E /* DeeperFunc.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = DeeperFunc.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		6355F20B1FA28632000A608E /* DeeperFunc.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DeeperFunc.h; sourceTree = "<group>"; };
 		6355F20C1FA28632000A608E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -170,7 +168,6 @@
 				6309ADE71FA5F54500ADA0CE /* Maybe.swift */,
 				6355F22A1FA4F91A000A608E /* String.swift */,
 				6366376C1FA8899F000BFC46 /* StringParser.swift */,
-				635363271FA8B063008E7FC8 /* PartialIso.swift */,
 				6355F20C1FA28632000A608E /* Info.plist */,
 			);
 			path = DeeperFunc;
@@ -430,7 +427,6 @@
 				636637641FA650BE000BFC46 /* Logger.swift in Sources */,
 				6355F2291FA294FE000A608E /* Path.swift in Sources */,
 				6309ADF61FA64F4100ADA0CE /* DeepLink.swift in Sources */,
-				635363281FA8B063008E7FC8 /* PartialIso.swift in Sources */,
 				6355F2211FA28649000A608E /* Deeper.swift in Sources */,
 				6355F22D1FA4FA52000A608E /* Parser.swift in Sources */,
 			);

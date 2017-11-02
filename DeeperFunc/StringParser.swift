@@ -42,7 +42,7 @@ func parsePathParam<A>(pattern: RoutePattern<A, Path>) -> StringParser<Path> {
         guard let pathComponent = $0.first else { return nil }
         guard pathParamTemplate(A.self) == pathComponent else { return nil }
         
-        return (Array($0.dropFirst()), [pattern.map(.any)])
+        return (Array($0.dropFirst()), [pattern.map({ $0 }, { $0 as? A })])
     }
 }
 
@@ -52,13 +52,13 @@ let stringPath: StringParser<Path> = parsePathParam(pattern: string)
 
 let litPath: StringParser<Path> = { components in
     guard var pathComponent = components.first else { return nil }
-    let typeErased: RoutePattern<Any, Path> = lit(pathComponent).map(.void)
+    let typeErased: RoutePattern<Any, Path> = lit(pathComponent).map({ _ in () }, { _ in () })
     return (Array(components.dropFirst()), [typeErased])
 }
 
 let anyEndPath: StringParser<Path> = { components in
     guard components.count == 1, components[0] == "*" else { return nil }
-    return ([], [any.map(.void)])
+    return ([], [any.map({ _ in () }, { _ in () })])
 }
 
 let anyPath: StringParser<Path> = { components in
@@ -67,7 +67,7 @@ let anyPath: StringParser<Path> = { components in
     guard let result = parseNext([components[1]]) else { return nil }
     guard !result.match.isEmpty else { return nil }
     
-    return (Array(components.suffix(from: 2)), [any(result.match[0]).map(.id)])
+    return (Array(components.suffix(from: 2)), [any(result.match[0]).map({ $0 }, { $0 })])
 }
 
 func parseQueryParam<A>(pattern: @escaping (String) -> RoutePattern<A, Query>) -> StringParser<Query> {
@@ -75,7 +75,7 @@ func parseQueryParam<A>(pattern: @escaping (String) -> RoutePattern<A, Query>) -
         guard var queryComponent = $0.first else { return nil }
         guard queryComponent.trimSuffix(queryParamTemplate(A.self, key: "")) else { return nil }
         
-        return (Array($0.dropFirst()), [pattern(queryComponent).map(.any)])
+        return (Array($0.dropFirst()), [pattern(queryComponent).map({ $0 }, { $0 as? A })])
     }
 }
 
@@ -94,7 +94,7 @@ func parseMaybe<S>(_ parse: @escaping StringParser<S>) -> StringParser<S> {
         guard let result = parse([pathComponent]) else { return nil }
         guard !result.match.isEmpty else { return nil }
         
-        return (result.rest, [maybe(result.match[0]).map(unwraped(.id))])
+        return (result.rest, [maybe(result.match[0]).map({ $0 }, { $0 })])
     }
 }
 
@@ -122,7 +122,7 @@ extension String {
 
         let pathPattern = pathPatterns.suffix(from: 1).reduce(pathPatterns[0], and)
         if !queryPatterns.isEmpty {
-            return queryPatterns.suffix(from: 1).reduce(and(pathPattern, queryPatterns[0]), and).map(.id)
+            return queryPatterns.suffix(from: 1).reduce(and(pathPattern, queryPatterns[0]), and).map({ $0 }, { $0 })
         } else {
             return pathPattern
         }

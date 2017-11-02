@@ -11,21 +11,21 @@ import Foundation
 infix operator .? : MultiplicationPrecedence
 
 // TODO: why not to clear out query params after they are matched?
-func queryParam<A>(_ key: String, _ iso: PartialIso<String, A>) -> RoutePattern<A, Query> {
+func queryParam<A>(_ key: String, _ apply: @escaping (String) -> A?, _ unapply: @escaping (A) -> String?) -> RoutePattern<A, Query> {
     return .init(
         parse: { route in
-            guard let queryValue = route.query[key]?.removingPercentEncoding, let parsed = iso.apply(queryValue) else { return nil }
+            guard let queryValue = route.query[key]?.removingPercentEncoding, let parsed = apply(queryValue) else { return nil }
             return (route, parsed)
     }, print: { a in
-        guard let value = iso.unapply(a) else { return RouteComponents(path: [], query: [:]) }
+        guard let value = unapply(a) else { return RouteComponents(path: [], query: [:]) }
         return RouteComponents(path: [], query: [key: value])
     }, template: queryParamTemplate(A.self, key: key))
 }
 
-public func string(_ key: String) -> RoutePattern<String, Query> { return queryParam(key, .id) }
-public func int(_ key: String) -> RoutePattern<Int, Query> { return queryParam(key, .int) }
-public func double(_ key: String) -> RoutePattern<Double, Query> { return queryParam(key, .double) }
-public func bool(_ key: String) -> RoutePattern<Bool, Query> { return queryParam(key, .bool) }
+public func string(_ key: String) -> RoutePattern<String, Query> { return queryParam(key, String.init, String.init) }
+public func int(_ key: String) -> RoutePattern<Int, Query> { return queryParam(key, Int.init, String.init) }
+public func double(_ key: String) -> RoutePattern<Double, Query> { return queryParam(key, Double.init, String.init) }
+public func bool(_ key: String) -> RoutePattern<Bool, Query> { return queryParam(key, Bool.fromString, Bool.toString) }
 
 extension Bool {
     static func fromString(_ stringValue: String) -> Bool? {

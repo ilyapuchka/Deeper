@@ -19,22 +19,22 @@ func lit(_ str: String) -> RoutePattern<Void, Path> {
     }, template: str)
 }
 
-func pathParam<A>(_ iso: PartialIso<String, A>) -> RoutePattern<A, Path> {
+func pathParam<A>(_ apply: @escaping (String) -> A?, _ unapply: @escaping (A) -> String?) -> RoutePattern<A, Path> {
     return .init(
         parse: { route in
-            guard let pathComponent = route.path.first?.removingPercentEncoding, let parsed = iso.apply(pathComponent) else { return nil }
+            guard let pathComponent = route.path.first?.removingPercentEncoding, let parsed = apply(pathComponent) else { return nil }
             return ((Array(route.path.dropFirst()), route.1), parsed)
     },
         print: { a in
-            return RouteComponents(path: [iso.unapply(a)].flatMap({ $0 }), query: [:])
+            return RouteComponents(path: [unapply(a)].flatMap({ $0 }), query: [:])
     }, template: pathParamTemplate(A.self))
 }
 
 // These are params transformations
 
-public let string: RoutePattern<String, Path> = pathParam(.id)
-public let int: RoutePattern<Int, Path> = pathParam(.int)
-public let double: RoutePattern<Double, Path> = pathParam(.double)
+public let string: RoutePattern<String, Path> = pathParam(String.init, String.init)
+public let int: RoutePattern<Int, Path> = pathParam(Int.init, String.init)
+public let double: RoutePattern<Double, Path> = pathParam(Double.init, String.init)
 
 // drop left param
 infix operator /> : MultiplicationPrecedence
