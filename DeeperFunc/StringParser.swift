@@ -37,18 +37,18 @@ func parseComponents<S>(with parsers: [StringParser<S>]) -> StringParser<S> {
 let parsePathComponents = parseComponents(with: [anyEndPath, anyPath, maybePath, intPath, doublePath, stringPath, litPath])
 let parseQueryComponents = parseComponents(with: [maybeQuery, intQuery, doubleQuery, boolQuery, stringQuery])
 
-func parsePathParam<A>(pattern: RoutePattern<A, Path>, _ iso: PartialIso<String, A>) -> StringParser<Path> {
+func parsePathParam<A>(pattern: RoutePattern<A, Path>) -> StringParser<Path> {
     return {
         guard let pathComponent = $0.first else { return nil }
         guard pathParamTemplate(A.self) == pathComponent else { return nil }
-
-        return (Array($0.dropFirst()), [pattern.map(iso <<< .string)])
+        
+        return (Array($0.dropFirst()), [pattern.map(.any)])
     }
 }
 
-let intPath: StringParser<Path> = parsePathParam(pattern: int, .int)
-let doublePath: StringParser<Path> = parsePathParam(pattern: double, .double)
-let stringPath: StringParser<Path> = parsePathParam(pattern: string, .id)
+let intPath: StringParser<Path> = parsePathParam(pattern: int)
+let doublePath: StringParser<Path> = parsePathParam(pattern: double)
+let stringPath: StringParser<Path> = parsePathParam(pattern: string)
 
 let litPath: StringParser<Path> = { components in
     guard var pathComponent = components.first else { return nil }
@@ -70,19 +70,19 @@ let anyPath: StringParser<Path> = { components in
     return (Array(components.suffix(from: 2)), [any(result.match[0]).map(.id)])
 }
 
-func parseQueryParam<A>(pattern: @escaping (String) -> RoutePattern<A, Query>, _ iso: PartialIso<String, A>) -> StringParser<Query> {
+func parseQueryParam<A>(pattern: @escaping (String) -> RoutePattern<A, Query>) -> StringParser<Query> {
     return {
         guard var queryComponent = $0.first else { return nil }
         guard queryComponent.trimSuffix(queryParamTemplate(A.self, key: "")) else { return nil }
         
-        return (Array($0.dropFirst()), [pattern(queryComponent).map(iso <<< .string)])
+        return (Array($0.dropFirst()), [pattern(queryComponent).map(.any)])
     }
 }
 
-let intQuery: StringParser<Query> = parseQueryParam(pattern: int, .int)
-let doubleQuery: StringParser<Query> = parseQueryParam(pattern: double, .double)
-let boolQuery: StringParser<Query> = parseQueryParam(pattern: bool, .bool)
-let stringQuery: StringParser<Query> = parseQueryParam(pattern: string, .id)
+let intQuery: StringParser<Query> = parseQueryParam(pattern: int)
+let doubleQuery: StringParser<Query> = parseQueryParam(pattern: double)
+let boolQuery: StringParser<Query> = parseQueryParam(pattern: bool)
+let stringQuery: StringParser<Query> = parseQueryParam(pattern: string)
 
 let maybePath: StringParser<Path> = parseMaybe(parseComponents(with: [intPath, doublePath, stringPath, litPath]))
 let maybeQuery: StringParser<Query> = parseMaybe(parseComponents(with: [intQuery, doubleQuery, boolQuery, stringQuery]))

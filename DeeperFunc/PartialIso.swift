@@ -33,6 +33,13 @@ public struct PartialIso<A, B> {
         )
     }
     
+    static var any: PartialIso<A, Any> {
+        return .init(
+            apply: { $0 },
+            unapply: { $0 as? A }
+        )
+    }
+    
 }
 
 func optional<A, B>(_ iso: PartialIso<A, B>) -> PartialIso<A, B?> {
@@ -76,8 +83,3 @@ extension PartialIso where A == String, B == Bool {
 extension PartialIso where A == B {
     static var id: PartialIso { return PartialIso(apply: { $0 }, unapply: { $0 }) }
 }
-
-extension PartialIso where A == Any, B == String {
-    static var string: PartialIso<Any, String> { return PartialIso(apply: String.init(describing:), unapply: { $0 }) }
-}
-
