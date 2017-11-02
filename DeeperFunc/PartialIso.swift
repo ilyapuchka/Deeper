@@ -33,20 +33,20 @@ public struct PartialIso<A, B> {
         )
     }
     
-    var someB: PartialIso<A, B?> {
-        return .init(
-            apply: apply,
-            unapply: { $0.flatMap(self.unapply) }
-        )
-    }
-    
-    var someA: PartialIso<A?, B> {
-        return .init(
-            apply: { $0.flatMap(self.apply) },
-            unapply: unapply
-        )
-    }
+}
 
+func optional<A, B>(_ iso: PartialIso<A, B>) -> PartialIso<A, B?> {
+    return PartialIso<A, B?>(
+        apply: iso.apply,
+        unapply: { $0.flatMap(iso.unapply) }
+    )
+}
+
+func unwraped<A, B>(_ iso: PartialIso<A, B?>) -> PartialIso<A, B> {
+    return PartialIso<A, B>(
+        apply: { iso.apply($0) ?? nil },
+        unapply: iso.unapply
+    )
 }
 
 extension PartialIso where A == Void, B == Any {

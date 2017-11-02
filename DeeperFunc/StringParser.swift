@@ -8,123 +8,113 @@
 
 import Foundation
 
-private typealias StringParser<S: PatternState> = ([String]) -> (rest: [String], match: RoutePattern<Any, S>)?
+typealias StringParser<S: PatternState> = ([String]) -> (rest: [String], match: [RoutePattern<Any, S>])?
 
-private struct StringRouteParser<S: PatternState> {
-    let parse: StringParser<S>
-}
-
-private func parseComponents<S>(_ components: [String], parsers: StringParser<S>...) -> (rest: [String], match: [RoutePattern<Any, S>])? {
-    return parseComponents(components, parsers: parsers)
-}
-
-private func parseComponents<S>(_ components: [String], parsers: [StringParser<S>]) -> (rest: [String], match: [RoutePattern<Any, S>])? {
-    var components = components
-    var pathPatterns: [RoutePattern<Any, S>] = []
-    
-    componentsLoop: while !components.isEmpty {
-        for parser in parsers {
-            if let result = parser(components) {
-                components = result.rest
-                pathPatterns.append(result.match)
-                continue componentsLoop
-            }
+extension Array {
+    func flatMapFirst<T>(where transform: (Element) throws -> T?) rethrows -> T? {
+        for element in self {
+            if let transformed = try transform(element) { return transformed }
         }
         return nil
     }
-    
-    return (components, pathPatterns)
 }
 
-private func parsePathParam<A>(pattern: RoutePattern<A, Path>, _ iso: PartialIso<String, A>) -> StringParser<Path> {
+func parseComponents<S>(with parsers: [StringParser<S>]) -> StringParser<S> {
+    return { components in
+        var components = components
+        var pathPatterns = [RoutePattern<Any, S>]()
+        while !components.isEmpty {
+            guard let result = parsers.flatMapFirst(where: { parse in parse(components) }) else { return nil }
+            
+            pathPatterns.append(contentsOf: result.match)
+            components = result.rest
+        }
+
+        return (rest: components, match: pathPatterns)
+    }
+}
+
+let parsePathComponents = parseComponents(with: [anyEndPath, anyPath, maybePath, intPath, doublePath, stringPath, litPath])
+let parseQueryComponents = parseComponents(with: [maybeQuery, intQuery, doubleQuery, boolQuery, stringQuery])
+
+func parsePathParam<A>(pattern: RoutePattern<A, Path>, _ iso: PartialIso<String, A>) -> StringParser<Path> {
     return {
         guard let pathComponent = $0.first else { return nil }
         guard pathParamTemplate(A.self) == pathComponent else { return nil }
 
-        let iso: PartialIso<A, Any> = iso <<< .string
-        let typeErased: RoutePattern<Any, Path> = pattern.map(iso)
-        return (Array($0.dropFirst()), typeErased)
+        return (Array($0.dropFirst()), [pattern.map(iso <<< .string)])
     }
 }
 
-private let intPath: StringParser<Path> = parsePathParam(pattern: int, .int)
-private let doublePath: StringParser<Path> = parsePathParam(pattern: double, .double)
-private let stringPath: StringParser<Path> = parsePathParam(pattern: string, .id)
+let intPath: StringParser<Path> = parsePathParam(pattern: int, .int)
+let doublePath: StringParser<Path> = parsePathParam(pattern: double, .double)
+let stringPath: StringParser<Path> = parsePathParam(pattern: string, .id)
 
-private let litPath: StringParser<Path> = { components in
+let litPath: StringParser<Path> = { components in
     guard var pathComponent = components.first else { return nil }
     let typeErased: RoutePattern<Any, Path> = lit(pathComponent).map(.void)
-    return (Array(components.dropFirst()), typeErased)
+    return (Array(components.dropFirst()), [typeErased])
 }
 
-private let anyEndPath: StringParser<Path> = { components in
+let anyEndPath: StringParser<Path> = { components in
     guard components.count == 1, components[0] == "*" else { return nil }
-    return ([], any.map(.void))
+    return ([], [any.map(.void)])
 }
 
-private let anyPath: StringParser<Path> = { components in
+let anyPath: StringParser<Path> = { components in
     guard components.count > 1, components[0] == "*", components[1] != "*" else { return nil }
-    guard let result = parseComponents([components[1]], parsers: intPath, doublePath, stringPath, litPath) else { return nil }
+    let parseNext = parseComponents(with: [intPath, doublePath, stringPath, litPath])
+    guard let result = parseNext([components[1]]) else { return nil }
     guard !result.match.isEmpty else { return nil }
     
-    return (Array(components.suffix(from: 2)), any(result.match[0]).map(.id))
+    return (Array(components.suffix(from: 2)), [any(result.match[0]).map(.id)])
 }
 
-private func parsePathComponents(_ components: [String]) -> [RoutePattern<Any, Path>]? {
-    return parseComponents(components, parsers: anyEndPath, anyPath, maybePath, intPath, doublePath, stringPath, litPath)?.match
-}
-
-private func parseQueryParam<A>(pattern: @escaping (String) -> RoutePattern<A, Query>, _ iso: PartialIso<String, A>) -> StringParser<Query> {
+func parseQueryParam<A>(pattern: @escaping (String) -> RoutePattern<A, Query>, _ iso: PartialIso<String, A>) -> StringParser<Query> {
     return {
         guard var queryComponent = $0.first else { return nil }
         guard queryComponent.trimSuffix(queryParamTemplate(A.self, key: "")) else { return nil }
         
-        let iso: PartialIso<A, Any> = iso <<< .string
-        let typeErased: RoutePattern<Any, Query> = pattern(queryComponent).map(iso)
-        return (Array($0.dropFirst()), typeErased)
+        return (Array($0.dropFirst()), [pattern(queryComponent).map(iso <<< .string)])
     }
 }
 
-private let intQuery: StringParser<Query> = parseQueryParam(pattern: int, .int)
-private let doubleQuery: StringParser<Query> = parseQueryParam(pattern: double, .double)
-private let boolQuery: StringParser<Query> = parseQueryParam(pattern: bool, .bool)
-private let stringQuery: StringParser<Query> = parseQueryParam(pattern: string, .id)
+let intQuery: StringParser<Query> = parseQueryParam(pattern: int, .int)
+let doubleQuery: StringParser<Query> = parseQueryParam(pattern: double, .double)
+let boolQuery: StringParser<Query> = parseQueryParam(pattern: bool, .bool)
+let stringQuery: StringParser<Query> = parseQueryParam(pattern: string, .id)
 
-private let maybePath: StringParser<Path> = parseMaybe(intPath, doublePath, stringPath, litPath)
-private let maybeQuery: StringParser<Query> = parseMaybe(intQuery, doubleQuery, boolQuery, stringQuery)
+let maybePath: StringParser<Path> = parseMaybe(parseComponents(with: [intPath, doublePath, stringPath, litPath]))
+let maybeQuery: StringParser<Query> = parseMaybe(parseComponents(with: [intQuery, doubleQuery, boolQuery, stringQuery]))
 
-private func parseMaybe<S>(_ parsers: StringParser<S>...) -> StringParser<S> {
+func parseMaybe<S>(_ parse: @escaping StringParser<S>) -> StringParser<S> {
     return { components in
         guard var pathComponent = components.first else { return nil }
         guard pathComponent.trimPrefix("(") && pathComponent.trimSuffix(")") else { return nil }
-        guard let result = parseComponents([pathComponent], parsers: parsers) else { return nil }
+        guard let result = parse([pathComponent]) else { return nil }
         guard !result.match.isEmpty else { return nil }
         
-        return (result.rest, maybe(result.match[0]).map(.id))
+        return (result.rest, [maybe(result.match[0]).map(unwraped(.id))])
     }
-}
-
-private func parseQueryComponents(_ components: [String]) -> [RoutePattern<Any, Query>]? {
-    return parseComponents(components, parsers: maybeQuery, intQuery, doubleQuery, boolQuery, stringQuery)?.match
 }
 
 extension String {
     
-    private var pathPatterns: [RoutePattern<Any, Path>]? {
+    var pathPatterns: [RoutePattern<Any, Path>]? {
         let path = index(of: "?").map(prefix(upTo:)).map(String.init) ?? self
         let pathComponents = path.components(separatedBy: "/", excludingDelimiterBetween: ("(", ")"))
         
-        return parsePathComponents(pathComponents)
+        return parsePathComponents(pathComponents)?.match
     }
     
-    private var queryPatterns: [RoutePattern<Any, Query>]? {
+    var queryPatterns: [RoutePattern<Any, Query>]? {
         guard let queryStart = index(of: "?") else { return [] }
         
         let query = String(suffix(from: queryStart).dropFirst())
         guard !query.isEmpty else { return [] }
         
         let queryComponents = query.components(separatedBy: "&", excludingDelimiterBetween: ("(", ")"))
-        return parseQueryComponents(queryComponents)
+        return parseQueryComponents(queryComponents)?.match
     }
     
     public var routePattern: RoutePattern<Any, Path>? {
@@ -140,19 +130,19 @@ extension String {
     
 }
 
-private func and(_ lhs: RoutePattern<Any, Path>, _ rhs: RoutePattern<Any, Path>) -> RoutePattern<Any, Path> {
+func and(_ lhs: RoutePattern<Any, Path>, _ rhs: RoutePattern<Any, Path>) -> RoutePattern<Any, Path> {
     return .init(parse: parseBoth(lhs, rhs), print: printBoth(lhs, rhs), template: templateAnd(lhs, rhs))
 }
 
-private func and(_ lhs: RoutePattern<Any, Query>, _ rhs: RoutePattern<Any, Query>) -> RoutePattern<Any, Query> {
+func and(_ lhs: RoutePattern<Any, Query>, _ rhs: RoutePattern<Any, Query>) -> RoutePattern<Any, Query> {
     return .init(parse: parseBoth(lhs, rhs), print: printBoth(lhs, rhs), template: templateAnd(lhs, rhs))
 }
 
-private func and(_ lhs: RoutePattern<Any, Path>, _ rhs: RoutePattern<Any, Query>) -> RoutePattern<Any, Query> {
+func and(_ lhs: RoutePattern<Any, Path>, _ rhs: RoutePattern<Any, Query>) -> RoutePattern<Any, Query> {
     return .init(parse: parseBoth(lhs, rhs), print: printBoth(lhs, rhs), template: templateAnd(lhs, rhs))
 }
 
-private func parseBoth<S1, S2>(_ lhs: RoutePattern<Any, S1>, _ rhs: RoutePattern<Any, S2>) -> Parser<Any> {
+func parseBoth<S1, S2>(_ lhs: RoutePattern<Any, S1>, _ rhs: RoutePattern<Any, S2>) -> Parser<Any> {
     return { url in
         guard let lhsResult = lhs.parse(url) else { return nil }
         guard let rhsResult = rhs.parse(lhsResult.0) else { return nil }
@@ -160,7 +150,7 @@ private func parseBoth<S1, S2>(_ lhs: RoutePattern<Any, S1>, _ rhs: RoutePattern
     }
 }
 
-private func printBoth<S1, S2>(_ lhs: RoutePattern<Any, S1>, _ rhs: RoutePattern<Any, S2>) -> Printer<Any> {
+func printBoth<S1, S2>(_ lhs: RoutePattern<Any, S1>, _ rhs: RoutePattern<Any, S2>) -> Printer<Any> {
     return { value in
         if let (lhsValue, rhsValue) = value as? (Any, Any), let lhs = lhs.print(lhsValue), let rhs = rhs.print(rhsValue) {
             return RouteComponents(lhs.path + rhs.path, lhs.query.merging(rhs.query, uniquingKeysWith: { $1 }))

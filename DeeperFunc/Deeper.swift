@@ -37,16 +37,6 @@ public struct RoutePattern<A/*pattern type*/, S: PatternState> {
         }, template: template)
     }
 
-    func map<S>(_ iso: PartialIso<A, Any?>) -> RoutePattern<Any, S> {
-        return .init(parse: {
-            guard let result = self.parse($0) else { return nil }
-            return (result.0, result.1)
-        }, print: {
-            guard let value = iso.unapply($0) else { return nil }
-            return self.print(value)
-        }, template: template)
-    }
-    
 }
 
 // converts generic type to it's string representation, removing Optional and Either wrappers
