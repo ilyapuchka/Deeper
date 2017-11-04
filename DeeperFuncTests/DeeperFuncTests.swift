@@ -13,8 +13,13 @@ class DeeperFuncTests: XCTestCase {
     
     var router: Router<Intent>!
     
+    func makeRouter() -> Router<Intent> {
+        class Handler: AnyDeepLinkHandler<Intent> { }
+        return Router(scheme: "app", rootDeepLinkHandler: Handler())
+    }
+    
     override func setUp() {
-        router = Router<Intent>()
+        router = makeRouter()
     }
     
     func AssertMatch(_ intent: Intent, _ url: String, file: StaticString = #file, line: UInt = #line) {
@@ -33,190 +38,190 @@ class DeeperFuncTests: XCTestCase {
     func testSimpleRoute() {
         router.add(Intent.empty, "recipes" /> "info")
         
-        AssertMatch(Intent.empty, "http://recipes/info")
-        AssertNotMatch("http://recipes/data")
-        AssertNotMatch("http://recipes")
-        AssertNotMatch("http://recipes/info/123")
+        AssertMatch(Intent.empty, "app://recipes/info")
+        AssertNotMatch("app://recipes/data")
+        AssertNotMatch("app://recipes")
+        AssertNotMatch("app://recipes/info/123")
     }
     
     func testLongPattern() {
         router.add(Intent.empty, "recipes" /> "info" /> "a" /> "b" /> "c" /> "d" /> "e" /> "f")
         
-        AssertMatch(Intent.empty, "http://recipes/info/a/b/c/d/e/f")
+        AssertMatch(Intent.empty, "app://recipes/info/a/b/c/d/e/f")
     }
     
     func testRouteWithPathParamAndQuery() {
         router.add(Intent.pathAndQueryParams, "recipes" /> int >/> string .? int("recipeId") & string("t"))
         
-        AssertMatch(Intent.pathAndQueryParams(123, "abc", 456, "A"), "http://recipes/123/abc?recipeId=456&t=A")
-        AssertMatch(Intent.pathAndQueryParams(123, "abc", 456, "A"), "http://recipes/123/abc?t=A&recipeId=456")
-        AssertNotMatch("http://recipes/abc/abc?recipeId=456&t=A")
-        AssertNotMatch("http://recipes/abc?recipeId=456&t=A")
-        AssertNotMatch("http://recipes/123/abc?recipeId=abc&t=A")
-        AssertNotMatch("http://recipes/123/abc?t=A")
-        AssertNotMatch("http://recipes/123/abc?recipeId=abc")
+        AssertMatch(Intent.pathAndQueryParams(123, "abc", 456, "A"), "app://recipes/123/abc?recipeId=456&t=A")
+        AssertMatch(Intent.pathAndQueryParams(123, "abc", 456, "A"), "app://recipes/123/abc?t=A&recipeId=456")
+        AssertNotMatch("app://recipes/abc/abc?recipeId=456&t=A")
+        AssertNotMatch("app://recipes/abc?recipeId=456&t=A")
+        AssertNotMatch("app://recipes/123/abc?recipeId=abc&t=A")
+        AssertNotMatch("app://recipes/123/abc?t=A")
+        AssertNotMatch("app://recipes/123/abc?recipeId=abc")
     }
     
     func testPathWithParams() {
         router.add(Intent.singleParam, "subscription" /> int)
         
-        AssertMatch(Intent.singleParam(123), "http://subscription/123")
-        AssertNotMatch("http://subscription/abc")
-        AssertNotMatch("http://subscription/true")
-        AssertNotMatch("http://subscription/abc/123")
+        AssertMatch(Intent.singleParam(123), "app://subscription/123")
+        AssertNotMatch("app://subscription/abc")
+        AssertNotMatch("app://subscription/true")
+        AssertNotMatch("app://subscription/abc/123")
 
-        router = Router()
+        router = makeRouter()
         router.add(Intent.twoParams, "subscription" /> int >/> "menu" >/> string)
-        AssertMatch(Intent.twoParams(123, "abc"), "http://subscription/123/menu/abc")
-        AssertNotMatch("http://subscription/abc/menu/123")
+        AssertMatch(Intent.twoParams(123, "abc"), "app://subscription/123/menu/abc")
+        AssertNotMatch("app://subscription/abc/menu/123")
     }
     
     func testAnyPatternInMiddleRoute() {
         router.add(Intent.anyMiddle, "recipes" /> "id" /> any /> "data" /> "abc")
         
-        AssertMatch(Intent.anyMiddle, "http://recipes/id/123/foo/data/abc")
-        AssertNotMatch("http://recipes/id/data/abc")
+        AssertMatch(Intent.anyMiddle, "app://recipes/id/123/foo/data/abc")
+        AssertNotMatch("app://recipes/id/data/abc")
 
-        router = Router()
+        router = makeRouter()
         router.add(Intent.anyMiddleParam, "recipes" /> "id" /> any /> int >/> "data" >/> "abc")
         
-        AssertMatch(Intent.anyMiddleParam(123), "http://recipes/id/foo/123/data/abc")
-        AssertNotMatch("http://recipes/id/foo/123/456/data/abc")
-        AssertNotMatch("http://recipes/id/123/data/abc")
+        AssertMatch(Intent.anyMiddleParam(123), "app://recipes/id/foo/123/data/abc")
+        AssertNotMatch("app://recipes/id/foo/123/456/data/abc")
+        AssertNotMatch("app://recipes/id/123/data/abc")
 
-        router = Router()
+        router = makeRouter()
         router.add(Intent.anyMiddleParam, "recipes" /> "id" /> any /> "data" /> int >/> "abc")
         
-        AssertMatch(Intent.anyMiddleParam(456), "http://recipes/id/123/data/456/abc")
-        AssertNotMatch("http://recipes/id/foo/data/abc")
+        AssertMatch(Intent.anyMiddleParam(456), "app://recipes/id/123/data/456/abc")
+        AssertNotMatch("app://recipes/id/foo/data/abc")
 
-        router = Router()
+        router = makeRouter()
         router.add(Intent.anyMiddleParam, "recipes" /> "id" /> int >/> any >/> "data" >/> "abc")
         
-        AssertMatch(Intent.anyMiddleParam(123), "http://recipes/id/123/abc/foo/data/abc")
-        AssertNotMatch("http://recipes/id/foo/data/abc")
+        AssertMatch(Intent.anyMiddleParam(123), "app://recipes/id/123/abc/foo/data/abc")
+        AssertNotMatch("app://recipes/id/foo/data/abc")
 
-        router = Router()
+        router = makeRouter()
         router.add(Intent.anyMiddleParam, "recipes" /> int >/> "id" >/> any >/> "data" >/> "abc")
         
-        AssertMatch(Intent.anyMiddleParam(123), "http://recipes/123/id/foo/data/abc")
-        AssertNotMatch("http://recipes/id/abc/foo/data/abc")
+        AssertMatch(Intent.anyMiddleParam(123), "app://recipes/123/id/foo/data/abc")
+        AssertNotMatch("app://recipes/id/abc/foo/data/abc")
         
-        router = Router()
+        router = makeRouter()
         router.add(Intent.anyMiddleParams, "recipes" /> "id" /> int >/> any >/> "data" >/> int >/> "abc")
         
-        AssertMatch(Intent.anyMiddleParams(123, 456), "http://recipes/id/123/foo/data/456/abc")
+        AssertMatch(Intent.anyMiddleParams(123, 456), "app://recipes/id/123/foo/data/456/abc")
         
-        router = Router()
+        router = makeRouter()
         router.add(Intent.anyMiddleParams, "recipes" /> "id" /> int >/> any >/> "data" >/> any >/> int >/> "abc")
-        AssertMatch(Intent.anyMiddleParams(123, 456), "http://recipes/id/123/foo/data/bar/456/abc")
+        AssertMatch(Intent.anyMiddleParams(123, 456), "app://recipes/id/123/foo/data/bar/456/abc")
 
-        router = Router()
+        router = makeRouter()
         router.add(Intent.anyMiddleParams, "recipes" /> int >/> "id" >/> any >/> int >/> "data" >/> "abc")
 
-        AssertMatch(Intent.anyMiddleParams(123, 456), "http://recipes/123/id/foo/456/data/abc")
+        AssertMatch(Intent.anyMiddleParams(123, 456), "app://recipes/123/id/foo/456/data/abc")
         
-        router = Router()
+        router = makeRouter()
         router.add(Intent.anyMiddleParams, "recipes" /> "id" /> int >/> any >/> int >/> "data" >/> "abc")
         
-        AssertMatch(Intent.anyMiddleParams(123, 456), "http://recipes/id/123/foo/456/data/abc")
+        AssertMatch(Intent.anyMiddleParams(123, 456), "app://recipes/id/123/foo/456/data/abc")
     }
 
     func testAnyPatternAtStart() {
         router.add(Intent.anyStart, any /> "data" /> "abc")
         
-        AssertMatch(Intent.anyStart, "http://foo/123/data/abc")
-        AssertMatch(Intent.anyStart, "http://data/data/abc")
-        AssertNotMatch("http://123/data/data/abc")
+        AssertMatch(Intent.anyStart, "app://foo/123/data/abc")
+        AssertMatch(Intent.anyStart, "app://data/data/abc")
+        AssertNotMatch("app://123/data/data/abc")
 
-        router = Router()
+        router = makeRouter()
         router.add(Intent.anyStartParam, any /> int >/> "data" >/> "abc")
-        AssertMatch(Intent.anyStartParam(123), "http://foo/123/data/abc")
+        AssertMatch(Intent.anyStartParam(123), "app://foo/123/data/abc")
 
-        router = Router()
+        router = makeRouter()
         router.add(Intent.anyStartParam, any /> "data" /> int >/> "abc")
-        AssertMatch(Intent.anyStartParam(123), "http://foo/data/123/abc")
+        AssertMatch(Intent.anyStartParam(123), "app://foo/data/123/abc")
     }
 
     func testAnyPatternAtEndRoute() {
         router.add(Intent.anyEnd, "data" /> any)
 
-        AssertMatch(Intent.anyEnd, "http://data/abc/123/456")
-        AssertNotMatch("http://data")
+        AssertMatch(Intent.anyEnd, "app://data/abc/123/456")
+        AssertNotMatch("app://data")
 
-        router = Router()
+        router = makeRouter()
         router.add(Intent.anyEnd, "data" /> "abc" /> any)
         
-        AssertMatch(Intent.anyEnd, "http://data/abc/123/456")
-        AssertMatch(Intent.anyEnd, "http://data/abc/data/abc")
-        AssertNotMatch("http://data/abc")
+        AssertMatch(Intent.anyEnd, "app://data/abc/123/456")
+        AssertMatch(Intent.anyEnd, "app://data/abc/data/abc")
+        AssertNotMatch("app://data/abc")
 
-        router = Router()
+        router = makeRouter()
         router.add(Intent.anyEndParam, "data" /> "abc" /> int >/> any)
-        AssertMatch(Intent.anyEndParam(123), "http://data/abc/123/456/abc")
+        AssertMatch(Intent.anyEndParam(123), "app://data/abc/123/456/abc")
 
-        router = Router()
+        router = makeRouter()
         router.add(Intent.anyEndParam, "data" /> int >/> "abc" >/> any)
-        AssertMatch(Intent.anyEndParam(123), "http://data/123/abc/456/abc")
+        AssertMatch(Intent.anyEndParam(123), "app://data/123/abc/456/abc")
         
-        router = Router()
+        router = makeRouter()
         router.add(Intent.anyEndParam, "data" /> "abc" /> any .? int("id"))
-        AssertMatch(Intent.anyEndParam(1), "http://data/abc/123/foo?id=1")
+        AssertMatch(Intent.anyEndParam(1), "app://data/abc/123/foo?id=1")
     }
     
     func testConditionInPath() {
         router.add(Intent.orPattern, "recipes" /> ("data" | "info") )
 
-        AssertMatch(Intent.orPattern, "http://recipes/data")
-        AssertMatch(Intent.orPattern, "http://recipes/info")
-        AssertNotMatch("http://recipes/foo")
+        AssertMatch(Intent.orPattern, "app://recipes/data")
+        AssertMatch(Intent.orPattern, "app://recipes/info")
+        AssertNotMatch("app://recipes/foo")
         
         router.add(Intent.eitherIntOrString, "recipes" /> ( int >/> "info" | "data" /> string ) )
         
-        AssertMatch(Intent.eitherIntOrString(.right("abc")), "http://recipes/data/abc")
-        AssertMatch(Intent.eitherIntOrString(.left(123)), "http://recipes/123/info")
+        AssertMatch(Intent.eitherIntOrString(.right("abc")), "app://recipes/data/abc")
+        AssertMatch(Intent.eitherIntOrString(.left(123)), "app://recipes/123/info")
     }
     
     func testConditionInQuery() {
         router.add(Intent.eitherIntOrString, "recipes" .? ( int("info") | string("data") ) )
         
-        AssertMatch(Intent.eitherIntOrString(.right("abc")), "http://recipes?data=abc")
-        AssertMatch(Intent.eitherIntOrString(.left(123)), "http://recipes?info=123")
+        AssertMatch(Intent.eitherIntOrString(.right("abc")), "app://recipes?data=abc")
+        AssertMatch(Intent.eitherIntOrString(.left(123)), "app://recipes?info=123")
         
         router.add(Intent.eitherIntOrString, "recipes" .? ( "info" .? int("recipeId") | "data" .? string("id") ) )
         
-        AssertMatch(Intent.eitherIntOrString(.right("abc")), "http://recipes/data?id=abc")
-        AssertMatch(Intent.eitherIntOrString(.left(123)), "http://recipes/info?recipeId=123")
+        AssertMatch(Intent.eitherIntOrString(.right("abc")), "app://recipes/data?id=abc")
+        AssertMatch(Intent.eitherIntOrString(.left(123)), "app://recipes/info?recipeId=123")
     }
     
     func testMaybePath() {
         router.add(Intent.empty, "recipes" /? "data" /> "info")
         
-        AssertMatch(Intent.empty, "http://recipes/data/info")
-        AssertMatch(Intent.empty, "http://recipes/info")
+        AssertMatch(Intent.empty, "app://recipes/data/info")
+        AssertMatch(Intent.empty, "app://recipes/info")
         
-        AssertNotMatch("http://recipes/foo/info")
-        AssertNotMatch("http://recipes/data/abc/info")
+        AssertNotMatch("app://recipes/foo/info")
+        AssertNotMatch("app://recipes/data/abc/info")
         
-        router = Router()
+        router = makeRouter()
         router.add(Intent.optionalParam, "recipes" /? int >/> "info")
 
-        AssertMatch(Intent.optionalParam(123), "http://recipes/123/info")
-        AssertMatch(Intent.optionalParam(nil), "http://recipes/info")
+        AssertMatch(Intent.optionalParam(123), "app://recipes/123/info")
+        AssertMatch(Intent.optionalParam(nil), "app://recipes/info")
         
-        AssertNotMatch("http://recipes/foo/info")
-        AssertNotMatch("http://recipes/123/abc/info")
+        AssertNotMatch("app://recipes/foo/info")
+        AssertNotMatch("app://recipes/123/abc/info")
     }
     
     func testMaybeQuery() {
         router.add(Intent.optionalParam, "recipes" .?? int("recipeId"))
-        AssertMatch(Intent.optionalParam(123), "http://recipes?recipeId=123")
-        AssertMatch(Intent.optionalParam(nil), "http://recipes")
+        AssertMatch(Intent.optionalParam(123), "app://recipes?recipeId=123")
+        AssertMatch(Intent.optionalParam(nil), "app://recipes")
 
-        router = Router()
+        router = makeRouter()
         router.add(Intent.optionalSecondParam, "recipes" .? int("recipeId") &? string("locale"))
-        AssertMatch(Intent.optionalSecondParam(123, "en"), "http://recipes?recipeId=123&locale=en")
-        AssertMatch(Intent.optionalSecondParam(123, nil), "http://recipes?recipeId=123")
+        AssertMatch(Intent.optionalSecondParam(123, "en"), "app://recipes?recipeId=123&locale=en")
+        AssertMatch(Intent.optionalSecondParam(123, nil), "app://recipes?recipeId=123")
     }
     
     func testTemplates() {
@@ -238,61 +243,58 @@ class DeeperFuncTests: XCTestCase {
     
     func AssertFormat(_ format: String, matches url: String, print values: Any, intent: Intent, router: (Router<Intent>, String) -> Router<Intent>, file: StaticString = #file, line: UInt = #line) {
         let url = URL(string: url)!
-        let path = (url.host ?? "") + url.path
-        let query = url.query ?? ""
         
         let route = format.routePattern
         XCTAssertEqual(route?.template, format, "Invalid template", file: file, line: line)
         
-        let printed = route?.print(values)
-        XCTAssertNotNil(printed, file: file, line: line)
-        XCTAssertEqual(printed?.path.joined(separator: "/"), path, "Invalid path", file: file, line: line)
-        XCTAssertEqual(printed?.query.map({ "\($0.0)=\($0.1)" }).joined(separator: "&"), query, "Invalid query", file: file, line: line)
+        let router = router(makeRouter(), format)
 
-        let router = router(Router<Intent>(), format)
+        let printed = route.flatMap({ router.url(route: $0, values: values) })
+        XCTAssertEqual(printed, url, "Invalid print", file: file, line: line)
+
         let result = router.openURL(url)
         XCTAssertEqual(result, intent, "Failed to match url", file: file, line: line)
     }
 
     func testStringFormat() {
         AssertFormat("recipe/info",
-                     matches: "http://recipe/info",
+                     matches: "app://recipe/info",
                      print: (),
                      intent: Intent.empty,
                      router: { $0.add(Intent.empty, format: $1) }
         )
         
         AssertFormat("recipe/:int",
-                     matches: "http://recipe/123",
+                     matches: "app://recipe/123",
                      print: 123,
                      intent: Intent.singleParam(123),
                      router: { $0.add(Intent.singleParam, format: $1) }
         )
         
         AssertFormat("recipe/:int/:string",
-                     matches: "http://recipe/123/abc",
+                     matches: "app://recipe/123/abc",
                      print: (123, "abc"),
                      intent: Intent.twoParams(123, "abc"),
                      router: { $0.add(Intent.twoParams, format: $1) }
         )
         
         AssertFormat("recipe/:int/menu/:string?t=:int&locale=:string",
-                     matches: "http://recipe/123/menu/abc?t=456&locale=en",
-                     print: (((123, "abc"), 456), "en"),
+                     matches: "app://recipe/123/menu/abc?t=456&locale=en",
+                     print: (123, "abc", 456, "en"),
                      intent: Intent.pathAndQueryParams(123, "abc", 456, "en"),
-                     router: { $0.add4(Intent.pathAndQueryParams, format: $1) }
+                     router: { $0.add(Intent.pathAndQueryParams, format: $1) }
         )
         
         AssertFormat("recipes/data/(info)?(t=:int)",
-                     matches: "http://recipes/data/info?t=1",
-                     print: (1),
+                     matches: "app://recipes/data/info?t=1",
+                     print: 1,
                      intent: Intent.singleParam(1),
                      router: { $0.add(Intent.singleParam, format: $1) }
         )
         
         AssertFormat("recipes/*/data/:int",
-                     matches: "http://recipes/*/data/1",
-                     print: (1),
+                     matches: "app://recipes/*/data/1",
+                     print: 1,
                      intent: Intent.singleParam(1),
                      router: { $0.add(Intent.singleParam, format: $1) }
                      )
