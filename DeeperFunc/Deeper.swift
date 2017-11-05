@@ -8,10 +8,6 @@
 
 import Foundation
 
-public enum Either<A, B> {
-    case left(A), right(B)
-}
-
 public typealias RouteComponents = (path: [String], query: [String: String])
 
 public protocol PatternState {}

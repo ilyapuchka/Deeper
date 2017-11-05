@@ -12,10 +12,10 @@ func lit(_ str: String) -> RoutePattern<Void, Path> {
     return .init(
         parse: { route in
             guard route.path.first == str else { return nil }
-            return (RouteComponents(path: Array(route.path.dropFirst()), query: route.1), ())
+            return ((Array(route.path.dropFirst()), route.1), ())
     },
         print: { _ in
-            return RouteComponents(path: [str], query: [:])
+            return ([str], [:])
     }, template: str)
 }
 
@@ -26,7 +26,7 @@ func pathParam<A>(_ apply: @escaping (String) -> A?, _ unapply: @escaping (A) ->
             return ((Array(route.path.dropFirst()), route.1), parsed)
     },
         print: { a in
-            return RouteComponents(path: [unapply(a)].flatMap({ $0 }), query: [:])
+            return ([unapply(a)].flatMap({ $0 }), [:])
     }, template: pathParamTemplate(A.self))
 }
 

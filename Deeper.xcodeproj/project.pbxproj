@@ -33,6 +33,7 @@
 		636637681FA6566E000BFC46 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 636637671FA6566E000BFC46 /* Utils.swift */; };
 		6366376B1FA659C9000BFC46 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63C90E041F8C0526003A5012 /* Utils.swift */; };
 		6366376D1FA8899F000BFC46 /* StringParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6366376C1FA8899F000BFC46 /* StringParser.swift */; };
+		6389CD581FAE4A3A0023C51A /* Either.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6389CD571FAE4A3A0023C51A /* Either.swift */; };
 		63BAF4BC1F7D7E310003DF2D /* Deeper.h in Headers */ = {isa = PBXBuildFile; fileRef = 63BAF4BA1F7D7E310003DF2D /* Deeper.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		63BAF4CB1F7D92230003DF2D /* DeeperTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63BAF4CA1F7D92230003DF2D /* DeeperTests.swift */; };
 		63BAF4CD1F7D92230003DF2D /* Deeper.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 63BAF4B71F7D7E310003DF2D /* Deeper.framework */; };
@@ -90,6 +91,7 @@
 		636637651FA655F6000BFC46 /* DeepLinkHandlingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepLinkHandlingTests.swift; sourceTree = "<group>"; };
 		636637671FA6566E000BFC46 /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
 		6366376C1FA8899F000BFC46 /* StringParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringParser.swift; sourceTree = "<group>"; };
+		6389CD571FAE4A3A0023C51A /* Either.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Either.swift; sourceTree = "<group>"; };
 		63BAF4B71F7D7E310003DF2D /* Deeper.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Deeper.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		63BAF4BA1F7D7E310003DF2D /* Deeper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Deeper.h; sourceTree = "<group>"; };
 		63BAF4BB1F7D7E310003DF2D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -167,6 +169,7 @@
 				6355F2221FA28EF8000A608E /* Any.swift */,
 				6309ADE71FA5F54500ADA0CE /* Maybe.swift */,
 				6355F22A1FA4F91A000A608E /* String.swift */,
+				6389CD571FAE4A3A0023C51A /* Either.swift */,
 				6366376C1FA8899F000BFC46 /* StringParser.swift */,
 				6355F20C1FA28632000A608E /* Info.plist */,
 			);
@@ -428,6 +431,7 @@
 				6355F2291FA294FE000A608E /* Path.swift in Sources */,
 				6309ADF61FA64F4100ADA0CE /* DeepLink.swift in Sources */,
 				6355F2211FA28649000A608E /* Deeper.swift in Sources */,
+				6389CD581FAE4A3A0023C51A /* Either.swift in Sources */,
 				6355F22D1FA4FA52000A608E /* Parser.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
