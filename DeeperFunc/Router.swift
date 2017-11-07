@@ -197,8 +197,13 @@ extension URL {
         guard let components = URLComponents(url: self, resolvingAgainstBaseURL: false) else { return nil }
         
         let path = [components.host].flatMap({ $0 }) + components.path.components(separatedBy: "/").filter({ !$0.isEmpty })
-        let query = components.queryItems?.filter({ $0.value != nil }).map({ ($0.name, $0.value!) })
-        return (path, Dictionary(query ?? [], uniquingKeysWith: { $1 }))
+        let query = components.queryItems?.filter({ $0.value != nil }).map({
+            (
+                $0.name.removingPercentEncoding ?? $0.name,
+                $0.value!.removingPercentEncoding ?? $0.value!
+            )
+        })
+        return (path.map({ $0.removingPercentEncoding ?? $0 }), Dictionary(query ?? [], uniquingKeysWith: { $1 }))
     }
 
 }

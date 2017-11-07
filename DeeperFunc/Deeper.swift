@@ -25,8 +25,8 @@ public struct RoutePattern<A/*pattern type*/, S: PatternState> {
     
     func map<S, B>(_ apply: @escaping (A) -> B?, _ unapply: @escaping (B) -> A?) -> RoutePattern<B, S> {
         return .init(parse: {
-            guard let result = self.parse($0), let value = apply(result.1) else { return nil }
-            return (result.0, value)
+            guard let result = self.parse($0), let value = apply(result.match) else { return nil }
+            return (result.rest, value)
         }, print: {
             guard let value = unapply($0) else { return nil }
             return self.print(value)

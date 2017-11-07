@@ -20,11 +20,8 @@ func printRight<R, LS, RS>(_ lhs: RoutePattern<Void, LS>, _ rhs: RoutePattern<R,
 
 func printBoth<L, R, LS, RS>(_ lhs: RoutePattern<L, LS>, _ rhs: RoutePattern<R, RS>) -> Printer<(L, R)> {
     return {
-        if let lhs = lhs.print($0.0), let rhs = rhs.print($0.1) {
-            return RouteComponents(lhs.path + rhs.path, lhs.query.merging(rhs.query, uniquingKeysWith: { $1 }))
-        } else {
-            return nil
-        }
+        guard let lhs = lhs.print($0.0), let rhs = rhs.print($0.1) else { return nil }
+        return (lhs.path + rhs.path, lhs.query.merging(rhs.query, uniquingKeysWith: { $1 }))
     }
 }
 
@@ -38,15 +35,7 @@ func printEither<L, R, S>(_ lhs: RoutePattern<L, S>, _ rhs: RoutePattern<R, S>) 
 }
 
 func printAny<A, S>(_ lhs: RoutePattern<A, S>, _ rhs: RoutePattern<A, S>) -> Printer<A> {
-    return {
-        if let lhs = lhs.print($0), let rhs = rhs.print($0) {
-            return (
-                ["(\(lhs.path.joined(separator: "/"))|\(rhs.path.joined(separator: "/")))"],
-                lhs.query.merging(rhs.query, uniquingKeysWith: { "(\($0)|\($1)))" })
-            )
-        }
-        return lhs.print($0) ?? rhs.print($0)
-    }
+    return { lhs.print($0) ?? rhs.print($0) }
 }
 
 func pathParamTemplate<A>(_ type: A.Type) -> String {

@@ -145,17 +145,17 @@ func and(_ lhs: RoutePattern<Any, Path>, _ rhs: RoutePattern<Any, Query>) -> Rou
 func parseBoth<S1, S2>(_ lhs: RoutePattern<Any, S1>, _ rhs: RoutePattern<Any, S2>) -> Parser<Any> {
     return { url in
         guard let lhsResult = lhs.parse(url) else { return nil }
-        guard let rhsResult = rhs.parse(lhsResult.0) else { return nil }
-        return (rhsResult.0, flatten(lhsResult.match, rhsResult.match ))
+        guard let rhsResult = rhs.parse(lhsResult.rest) else { return nil }
+        return (rhsResult.rest, flatten(lhsResult.match, rhsResult.match ))
     }
 }
 
 func printBoth<S1, S2>(_ lhs: RoutePattern<Any, S1>, _ rhs: RoutePattern<Any, S2>) -> Printer<Any> {
     return { value in
         if let (lhsValue, rhsValue) = value as? (Any, Any), let lhs = lhs.print(lhsValue), let rhs = rhs.print(rhsValue) {
-            return RouteComponents(lhs.path + rhs.path, lhs.query.merging(rhs.query, uniquingKeysWith: { $1 }))
+            return (lhs.path + rhs.path, lhs.query.merging(rhs.query, uniquingKeysWith: { $1 }))
         } else if let lhs = lhs.print(value), let rhs = rhs.print(value)  {
-            return RouteComponents(lhs.path + rhs.path, lhs.query.merging(rhs.query, uniquingKeysWith: { $1 }))
+            return (lhs.path + rhs.path, lhs.query.merging(rhs.query, uniquingKeysWith: { $1 }))
         } else {
             return nil
         }

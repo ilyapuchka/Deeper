@@ -15,7 +15,7 @@ func maybe(_ route: RoutePattern<Void, Path>) -> RoutePattern<Void, Path> {
 func maybe<A, S>(_ route: RoutePattern<A, S>) -> RoutePattern<A?, S> {
     return .init(parse: { url in
         guard let result = route.parse(url) else { return (url, nil) }
-        return (result.rest, .some(result.match))
+        return (result.rest, result.match)
     }, print: {
         return $0.flatMap(route.print)
     }, template: "(\(route.template))")

@@ -8,17 +8,14 @@
 
 import Foundation
 
-infix operator .? : MultiplicationPrecedence
-
 // TODO: why not to clear out query params after they are matched?
 func queryParam<A>(_ key: String, _ apply: @escaping (String) -> A?, _ unapply: @escaping (A) -> String?) -> RoutePattern<A, Query> {
-    return .init(
-        parse: { route in
-            guard let queryValue = route.query[key]?.removingPercentEncoding, let parsed = apply(queryValue) else { return nil }
-            return (route, parsed)
+    return .init(parse: { route in
+        guard let queryValue = route.query[key], let parsed = apply(queryValue) else { return nil }
+        return (route, parsed)
     }, print: { a in
-        guard let value = unapply(a) else { return RouteComponents(path: [], query: [:]) }
-        return RouteComponents(path: [], query: [key: value])
+        guard let value = unapply(a) else { return nil }
+        return ([], [key: value])
     }, template: queryParamTemplate(A.self, key: key))
 }
 
@@ -41,11 +38,9 @@ extension Bool {
     }
 }
 
-extension RoutePattern where S == Query {
+infix operator .? : MultiplicationPrecedence
 
-    static func or(_ lhs: RoutePattern, _ rhs: RoutePattern) -> RoutePattern {
-        return .init(parse: parseAny(lhs, rhs), print: printAny(lhs, rhs), template: templateOr(lhs, rhs))
-    }
+extension RoutePattern where S == Query {
 
     public static func .?(lhs: RoutePattern<Void, Path>, rhs: RoutePattern) -> RoutePattern {
         return .init(parse: parseRight(lhs, rhs), print: printRight(lhs, rhs), template: templateAnd(lhs, rhs))
@@ -59,12 +54,12 @@ extension RoutePattern where S == Query {
         return .init(parse: parseBoth(lhs, rhs), print: printBoth(lhs, rhs), template: templateAnd(lhs, rhs))
     }
     
-    public static func |(lhs: RoutePattern, rhs: RoutePattern) -> RoutePattern {
-        return .init(parse: parseAny(lhs, rhs), print: printAny(lhs, rhs), template: templateOr(lhs, rhs))
-    }
+}
+
+extension String {
     
-    public static func |<B>(lhs: RoutePattern, rhs: RoutePattern<B, Query>) -> RoutePattern<Either<A, B>, Query> {
-        return .init(parse: parseEither(lhs, rhs), print: printEither(lhs, rhs), template: templateOr(lhs, rhs))
+    public static func .?<A>(lhs: String, rhs: RoutePattern<A, Query>) -> RoutePattern<A, Query> {
+        return lit(lhs) .? rhs
     }
     
 }
