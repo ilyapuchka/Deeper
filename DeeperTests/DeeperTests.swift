@@ -106,7 +106,7 @@ class DeeperTests: XCTestCase {
         route = "recipe" /? ("details" / .recipeId)
         AssertMatches(route, "http://recipe/details/123", params: [.recipeId: "123"])
         AssertMatches(route, "http://recipe/details")
-        
+
         route = "recipe" /? ("details" | "detail") / .recipeId
         AssertMatches(route, "http://recipe/details/123", params: [.recipeId: "123"])
         AssertMatches(route, "http://recipe/detail/123", params: [.recipeId: "123"])
@@ -115,7 +115,6 @@ class DeeperTests: XCTestCase {
         AssertNotMatch(route, "http://recipe/details/detail/123")
 
         route = "recipe" /? "details" /? "detail" / .recipeId
-        
         AssertMatches(route, "http://recipe/details/123", params: [.recipeId: "123"])
         AssertMatches(route, "http://recipe/detail/123", params: [.recipeId: "123"])
         AssertMatches(route, "http://recipe/details/detail/123", params: [.recipeId: "123"])
@@ -155,10 +154,10 @@ class DeeperTests: XCTestCase {
 
         route = "recipe" / .any / "details" / .recipeId
         AssertMatches(route, "http://recipe/archive/details/123", params: [.recipeId: "123"])
-        
+
         route = "recipe" / .any / .recipeId
         AssertNotMatch(route, "http://recipe/archive/details/123", "any can be used only in the end or between two string patterns")
-        
+
         route = "recipe" / .any / .any
         AssertNotMatch(route, "http://recipe/archive/details/123", "can't have two any next to each other")
     }
@@ -245,73 +244,4 @@ class DeeperTests: XCTestCase {
         XCTAssertTrue(DeepLinkPatternParameter.ParamType.str.validate("123"))
     }
     
-}
-
-extension DeeperTests {
-    
-    func testThatItDoesNotOpenURLWithWrongScheme() {
-        let router = DeepLinkRouter(scheme: "app", rootDeepLinkHandler: FinalHandler())
-        router.add(routes: ["recipes"]) { _, _ in .action }
-        XCTAssertFalse(router.canOpen(url: URL(string: "http://recipes")!))
-    }
-    
-    private func routeURL<H: DeepLinkHandler>(handler: H) where H.Intent == Intent {
-        let router = DeepLinkRouter(scheme: "app", rootDeepLinkHandler: handler)
-        router.add(routes: ["recipes"]) { _, _ in .action }
-        router.open(url: URL(string: "app://recipes")!)
-    }
-    
-    func testDelayedDeepLinkHandling() {
-        let handler = DelayedHandler()
-        routeURL(handler: handler)
-        
-        XCTAssertTrue(handler.calledSideEffect)
-        guard handler.states.count == 2,
-            case .delayed? = handler.states.first,
-            case .opened? = handler.states.last else {
-                XCTFail("Invalid handling states: \(handler.states)")
-                return
-        }
-    }
-
-    func testOpenedDeepLinkHandling() {
-        let handler = FinalHandler()
-        routeURL(handler: handler)
-        
-        XCTAssertTrue(handler.calledSideEffect)
-        guard handler.states.count == 1,
-            case .opened? = handler.states.last else {
-                XCTFail("Invalid handling states: \(handler.states)")
-                return
-        }
-    }
-    
-    func testRejectedDeepLinkHandling() {
-        let handler = RejecthHandler()
-        routeURL(handler: handler)
-
-        guard handler.states.count == 1,
-            case .rejected? = handler.states.last else {
-                XCTFail("Invalid handling states: \(handler.states)")
-                return
-        }
-    }
-
-    func testPassedThroughDeepLinkHandling() {
-        let handler = PassThroughHandler()
-        routeURL(handler: handler)
-        
-        XCTAssertTrue(handler.calledSideEffect)
-        guard handler.states.count == 1,
-            case .passedThrough? = handler.states.last else {
-                XCTFail("Invalid handling states: \(handler.states)")
-                return
-        }
-        XCTAssertTrue(handler.passedToHandler.calledSideEffect)
-        guard handler.passedToHandler.states.count == 1,
-            case .opened? = handler.passedToHandler.states.last else {
-                XCTFail("Invalid handling states: \(handler.states)")
-                return
-        }
-    }
 }

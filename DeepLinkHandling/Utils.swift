@@ -12,25 +12,25 @@ extension String {
     @discardableResult
     mutating func trimPrefix(_ prefix: String) -> Bool {
         guard hasPrefix(prefix) else { return false }
-        self = String(characters.suffix(characters.count - prefix.characters.count))
+        self = String(suffix(count - prefix.count))
         return true
     }
 
     func trimmingPrefix(_ prefix: String) -> String {
         guard hasPrefix(prefix) else { return self }
-        return String(characters.suffix(characters.count - prefix.characters.count))
+        return String(suffix(count - prefix.count))
     }
 
     @discardableResult
     mutating func trimSuffix(_ suffix: String) -> Bool {
         guard hasSuffix(suffix) else { return false }
-        self = String(characters.prefix(characters.count - suffix.characters.count))
+        self = String(prefix(count - suffix.count))
         return true
     }
 
     func trimmingSuffix(_ suffix: String) -> String {
         guard hasSuffix(suffix) else { return self }
-        return String(characters.prefix(characters.count - suffix.characters.count))
+        return String(prefix(count - suffix.count))
     }
 
     func components(separatedBy delimiter: String, excludingDelimiterBetween between: (open: String, close: String)) -> [String] {
@@ -40,10 +40,10 @@ extension String {
         var items = [String]()
         var matchedDelimiter = (alreadyMatched: "", leftToMatch: delimiter)
         
-        for char in characters {
-            if between.open.characters.contains(char) {
+        for char in self {
+            if between.open.contains(char) {
                 boundingCharactersCount += 1
-            } else if between.close.characters.contains(char) {
+            } else if between.close.contains(char) {
                 boundingCharactersCount = max(0, boundingCharactersCount - 1)
             }
             if char == "\"" {
@@ -55,7 +55,7 @@ extension String {
                 continue
             }
             
-            if char == matchedDelimiter.leftToMatch.characters.first {
+            if char == matchedDelimiter.leftToMatch.first {
                 matchedDelimiter.alreadyMatched.append(char)
                 matchedDelimiter.leftToMatch = String(matchedDelimiter.leftToMatch.dropFirst())
                 if matchedDelimiter.leftToMatch.isEmpty {
@@ -76,16 +76,3 @@ extension String {
         return items
     }
 }
-
-extension Array where Element == DeepLinkPathPattern {
-    
-    var route: DeepLinkRoute {
-        if count == 1, case .string(let str)? = first {
-            return [.string(str)]
-        } else {
-            return DeepLinkRoute(pattern: self)
-        }
-    }
-    
-}
-
