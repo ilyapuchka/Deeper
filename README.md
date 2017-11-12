@@ -6,7 +6,7 @@
 
 ### Define intents
 
-First you start desribing *intents* of your deeplinks. It might be just opening some screen or performing an action on some object.
+First you start by describing *intents* of your deeplinks. It might be just opening some screen or performing an action on some object.
 
 ```swift
 enum MyDeepLinkIntent {
@@ -20,96 +20,50 @@ You are not limited to using `enum` for that, but it will make it easier to keep
 
 ### Register url patterns (aka routes)
 
-Next you create a router object and define the "routes" for your deeplinks by registering handler closures which return spicific intent that should be performed when this deeplink is handeled or nil if it can't be properly handeled. In this handler you have access to the full url, as well as to parsed parameters, extracted from the paths, based on the pattern that you are defining.
+Next you create a router object and define the "routes" for your deeplinks. You can use any router you want along with Deeper, you'll just need to write some extensions to bridge their APIs and implement `DeepLinkRouter` protocol. In the [article](http://ilya.puchka.me/deeplinks-no-brainer/) you can see an example of using [JLRoutes](https://github.com/joeldev/JLRoutes), which was an inspiration for Deeper's own router.
+
+#### Deeper.Router
+
+With `Deeper.Router` you register routes by registering handler closures which return spicific intent that should be performed when this deeplink is handeled or `nil` if it can't be properly handled. In this handler you have access to the full url, as well as to parsed parameters, extracted from the paths, based on the pattern that you are defining.
 
 > Note: order of registration matters and defines priority of the route, first registered will be tried first when handling deeplink will happen.
 
 ```swift
-let router = DeepLinkRouter(scheme: "myapp", rootDeepLinkHandler: appDelegate)
+let router = Router<Intent>(scheme: "myapp", rootDeepLinkHandler: appDelegate)
 
-router.add(routes: ["profile/:userId"]) { url, params in 
-	guard let userId = params[DeepLinkPatternParameter("userId")] else { return nil }
+router.add(routes: ["profile" / "userId" ]) { url, params in 
+	guard let userId = params[.init("userId")] else { return nil }
 	return .showProfile(userId: userId)
 }
 ```
 
-You can use plain strings or make it more "type-safe" with a help of `DeepLinkPatternParameter` and some custom operators:
+#### DeeperFunc.Router
+
+With `DeeperFunc.Router` your register routes by associating your intent cases (or any other constructor) with url patterns.
 
 ```swift
+let router = Router<Intent>(scheme: "myapp", rootDeepLinkHandler: appDelegate)
 
-extension DeepLinkPatternParameter {
-	static let userId = DeepLinkPatternParameter("userId")
-}
-
-router.add(routes: [ "profile" / .userId ]) { url, params in 
-	guard let userId = params[.userId] else { return nil }
-	return .showProfile(userId: userId)
-}
-
+router.add(Intent.showProfile, route: "profile" /> string )
 ```
 
-You can do that not only for parameters but also for path components:
+You will also need to make your intent type conform to `Route` protocol. For that you need to implement `Equatable` protocol and `deconstruct` function:
 
 ```swift
+extension Intent: Route {
 
-extension DeepLinkRoute {
-	static let profile = DeepLinkRoute("profile")
+  func deconstruct<A>(_ constructor: ((A) -> Intent)) -> A? {
+  	switch self {
+  	  case let .showProfile(values as A) where self == constructor(values): return values
+  	  case let .follow(values as A) where self == constructor(values): return values
+  	  case let .retweet(values as A) where self == constructor(values): return values
+  	}
+  } 
+
 }
-
-router.add(routes: [ .profile / .userId ]) { url, params in 
-	guard let userId = params[.userId] else { return nil }
-	return .showProfile(userId: userId)
-}
-
 ```
 
-You can also use optional, conditional (this-or-this), wildcard or typed path components. Avoid very complex patterns because Swift can simply fail to compile too complex expressions, but if you need you can use string format:
-
-```swift
-// match any number of paths before "profile"
-route.add(routes: [ .any / .profile / .userId ]) { ... }
-route.add(routes: [ "*/profile/:userId" ]) { ... }
-
-// match "profile" or "user" path
-route.add(routes: [ .profile | "user" / .userId ]) { }
-route.add(routes: [ "(profile|user)/:userId" ]) { }
-
-// match "profile/info/123" or just "profile/123"
-route.add(routes: [ .profile /? "info" / .userId ]) { }
-route.add(routes: [ "profile/(info)/:userId" ]) { }
-
-// match "profile/123" but not "profile/abc"
-route.add(routes: [ .profile / .num("userId") ])
-route.add(routes: [ "profile/:num(userId)" ])
-```
-
-#### Query parameters
-
-Along with path path components you can match query parameters. Query parameters will be matched even if they appear in url in a different order then in a pttern. Url also can have any other parameters, they will be simply ignored during matching. Query paremeters in a pattern are required unless they are explicitely marked as optional using `.maybe` or `.or` pattern.
-
-```swift
-// match `profile/userId=123&locale=us`
-route.add(routes: [ .any / .profile .? .userId & .locale ]) { ... }
-route.add(routes: [ "*/profile?:userId&:locale" ]) { ... }
-
-// match `profile/userId=123&locale=us` and `profile/userId=123`
-route.add(routes: [ .any / .profile .? .userId &? .locale ]) { ... }
-route.add(routes: [ "*/profile?:userId&:locale" ]) { ... }
-```
-
-#### Custom operators
-
-`/` - concatenates parts of path into a single route
-
-`/?` - same as `/` but makes following path pattern optional (the same as using `.maybe` pattern)
-
-`.?` - marks end of path pattern and start of query pattern, appends first query pattern to the route
-
-`&` - appends following query pattern to the route, can only be used after applying `.?` or `.??`
-
-`.??` / `&?` - the same as `.?` / `&` but makes following query pattern optional (the same as using `.maybe` pattern)
-
-`|` - defines a pattern with two alternatives, either left or right pattern should match, left pattern will be checked first (the same as using `.or` pattern)
+As you can see this is just a boilerplate. You can generate it with Sourcery as well as `Equatable` conformance.
 
 
 ### Implement handlers
@@ -182,14 +136,12 @@ func application(_ app: UIApplication, open url: URL, options: [UIApplicationOpe
 
 When `open(url:)` is called router will search for the pattern that matches this url and will invoke corresponding handler to get the intent from it. If some handler returns `nil` it will continue to match other handlers until it tries all of them. When matching pattern is found router will create `DeepLink` from url and intent returned by handler closure and will pass it to `open(deeplink:animated:) -> DeepLinkHandling<Intent>` method of a `rootDeepLinkHandler`.
 
-> Note: you can use any other deeplink router you want along with Deeper, you'll just need to write some extensions to bridge their APIs. In the [article](http://ilya.puchka.me/deeplinks-no-brainer/) you can see an example of using [JLRoutes](https://github.com/joeldev/JLRoutes), which was an inspiration for Deeper router.
+To handle deeplinks you can follow two different scenarios:
 
-To handle deeplinks you can adopt two different scenarios:
+- present destination screen from what ever screen user is currently on
+- perform all navigation steps to get to the destination screen like if user would do all the navigation manually 
 
-- open destination screen from what ever screen user is currently on
-- perform all navigation to get to the destination screen like if user would do all the navigation manually 
-
-What approach to choose is up to you, but *Deeper* allows you to implement any of them. For that you are provided with a set of `DeepLinkHandling` options which represent different kind of possible states that you may be in while handling deeplink. You can provide optional side effects that will be executed right after `open(deeplink:animated:) -> DeepLinkHandling<MyDeepLinkIntent>` returns. This can help you to simplify unit tests.
+What approach to choose is up to you, but *Deeper* allows you to implement any of them. For that you are provided with a set of `DeepLinkHandling` options which represent different kind of possible states that you may be in while handling deeplink. You can provide optional side effects that will be executed right after `open(deeplink:animated:) -> DeepLinkHandling<Intent>` returns. This can help you to simplify unit tests.
 
 ```swift
 public enum DeepLinkHandling<Intent> {
@@ -210,7 +162,7 @@ public enum DeepLinkHandling<Intent> {
 
 ```
 
-In general that's it, the rest depends on your imagination and how your application is built. In the [article](http://ilya.puchka.me/deeplinks-no-brainer/) you can find more extensive code examples more close to real life project.
+In general that's it, the rest depends on your imagination and how your application is built. In the [article](http://ilya.puchka.me/deeplinks-no-brainer/) you can find more extensive code examples which are closer to real life project.
 
 ### TODO:
 
