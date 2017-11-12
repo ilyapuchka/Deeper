@@ -29,6 +29,8 @@ With `Deeper.Router` you register routes by registering handler closures which r
 > Note: order of registration matters and defines priority of the route, first registered will be tried first when handling deeplink will happen.
 
 ```swift
+import Deeper
+
 let router = Router<Intent>(scheme: "myapp", rootDeepLinkHandler: appDelegate)
 
 router.add(routes: ["profile" / "userId" ]) { url, params in 
@@ -42,6 +44,8 @@ router.add(routes: ["profile" / "userId" ]) { url, params in
 With `DeeperFunc.Router` your register routes by associating your intent cases (or any other constructor) with url patterns.
 
 ```swift
+import DeeperFunc
+
 let router = Router<Intent>(scheme: "myapp", rootDeepLinkHandler: appDelegate)
 
 router.add(Intent.showProfile, route: "profile" /> string )
