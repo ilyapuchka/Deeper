@@ -8,9 +8,9 @@
 
 public protocol DeepLinkHandler: class {
     associatedtype Intent
-    // stores the current state of deeplink handling
+    /// Current state of deeplink handling
     var deeplinkHandling: DeepLinkHandling<Intent>? { get set }
-    // attempts to handle deeplink and returns next state
+    /// Handle deeplink and return next state
     func open(deeplink: DeepLink<Intent>, animated: Bool) -> DeepLinkHandling<Intent>
 }
 
@@ -48,6 +48,7 @@ extension DeepLinkHandler {
     }
 }
 
+/// Wrapper used to refere handler with Intent associated type
 open class AnyDeepLinkHandler<Intent>: DeepLinkHandler {
     
     open var deeplinkHandling: DeepLinkHandling<Intent>? {

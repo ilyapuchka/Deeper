@@ -1,6 +1,6 @@
 # Deeper
 
-*Deeper* is a little framework that aims to help to put some structure in deeplink handling in your iOS app. Read [this article](http://ilya.puchka.me/deeplinks-no-brainer/) to get an overview of an idea behind it.
+*Deeper* is a small framework that aims to help to put some structure in deeplink handling in your iOS app. Read [this article](http://ilya.puchka.me/deeplinks-no-brainer/) to get an overview of an idea behind it.
 
 ## Usage
 

@@ -57,8 +57,8 @@ route.add(routes: [ .profile /? "info" / .userId ]) { ... }
 route.add(routes: [ "profile/(info)/:userId" ]) { ... }
 
 // match "profile/123" but not "profile/abc"
-route.add(routes: [ .profile / .num("userId") ]) { ... }
-route.add(routes: [ "profile/:num(userId)" ]) { ... }
+route.add(routes: [ .profile / .int("userId") ]) { ... }
+route.add(routes: [ "profile/:int(userId)" ]) { ... }
 ```
 
 #### Query parameters

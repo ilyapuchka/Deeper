@@ -8,12 +8,13 @@
 
 public struct DeepLinkPatternParameter: RawRepresentable, Hashable, CustomStringConvertible {
     public enum ParamType: String {
-        case num, str, bool
+        case int, double, string, bool
         func validate(_ value: String) -> Bool {
             switch self {
-            case .num: return Double(value) != nil
+            case .int: return Int(value) != nil
+            case .double: return Double(value) != nil
             case .bool: return Bool(value.lowercased()) != nil || value == "0" || value == "1"
-            case .str: return true
+            case .string: return true
             }
         }
     }
@@ -27,10 +28,12 @@ public struct DeepLinkPatternParameter: RawRepresentable, Hashable, CustomString
     
     public init(_ rawValue: String) {
         var _rawValue = rawValue.trimmingSuffix(")")
-        if _rawValue.trimPrefix("num(") {
-            self.init(_rawValue, type: .num)
-        } else if _rawValue.trimPrefix("str(") {
-            self.init(_rawValue, type: .str)
+        if _rawValue.trimPrefix("int(") {
+            self.init(_rawValue, type: .int)
+        } else if _rawValue.trimPrefix("double(") {
+            self.init(_rawValue, type: .double)
+        } else if _rawValue.trimPrefix("string(") {
+            self.init(_rawValue, type: .string)
         } else if _rawValue.trimPrefix("bool(") {
             self.init(_rawValue, type: .bool)
         } else {
@@ -43,12 +46,16 @@ public struct DeepLinkPatternParameter: RawRepresentable, Hashable, CustomString
         self.type = type
     }
 
-    public static func num(_ rawValue: String) -> DeepLinkPatternParameter {
-        return .init(rawValue, type: .num)
+    public static func int(_ rawValue: String) -> DeepLinkPatternParameter {
+        return .init(rawValue, type: .int)
     }
 
-    public static func str(_ rawValue: String) -> DeepLinkPatternParameter {
-        return .init(rawValue, type: .str)
+    public static func double(_ rawValue: String) -> DeepLinkPatternParameter {
+        return .init(rawValue, type: .double)
+    }
+
+    public static func string(_ rawValue: String) -> DeepLinkPatternParameter {
+        return .init(rawValue, type: .string)
     }
 
     public static func bool(_ rawValue: String) -> DeepLinkPatternParameter {
