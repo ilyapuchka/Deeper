@@ -175,6 +175,13 @@ extension Router {
     public func url(for route: U) -> URL? {
         return self.route?.print(route).flatMap(url(from:))
     }
+    
+    public func open(route: U) -> Bool {
+        guard let url = url(for: route) else { return false }
+        let deeplink = DeepLink(url: url, intent: route)
+        rootDeepLinkHandler?.open(deeplink: deeplink, animated: true) as Void?
+        return true
+    }
 
     func url(from routeComponents: RouteComponents) -> URL? {
         guard !routeComponents.path.isEmpty else { return nil }
