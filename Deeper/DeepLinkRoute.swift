@@ -54,27 +54,6 @@ public struct DeepLinkRoute: RawRepresentable, Hashable, ExpressibleByStringLite
 
 }
 
-public protocol DeepLinkRouteConvertible: CustomStringConvertible {
-    var route: DeepLinkRoute { get }
-}
-
-extension DeepLinkRoute: DeepLinkRouteConvertible {
-    public var route: DeepLinkRoute { return self }
-}
-
-public struct DeepLinkRouteWithQuery: DeepLinkRouteConvertible, CustomStringConvertible {
-    public let route: DeepLinkRoute
-    
-    init(pattern: [DeepLinkPathPattern], query: [DeepLinkQueryPattern]) {
-        self.route = DeepLinkRoute(pattern: pattern, query: query)
-    }
-    
-    public var description: String {
-        return route.description
-    }
-    
-}
-
 extension String {
     
     var pattern: [DeepLinkPathPattern] {

@@ -18,7 +18,7 @@ extension DeepLinkRoute {
     static let recipes = DeepLinkRoute("recipes")
 }
 
-func AssertMatches(_ route: DeepLinkRouteConvertible, _ url: String, params: [DeepLinkPatternParameter: String]? = nil, _ message: String = "", file: StaticString = #file, line: UInt = #line) {
+func AssertMatches(_ route: DeepLinkRoute, _ url: String, params: [DeepLinkPatternParameter: String]? = nil, _ message: String = "", file: StaticString = #file, line: UInt = #line) {
     let result = DeepLinkPatternMatcher(route: route, url: URL(string: url)!).match()
     XCTAssertTrue(result.0, message, file: file, line: line)
     if let expectedParams = params {
@@ -26,7 +26,7 @@ func AssertMatches(_ route: DeepLinkRouteConvertible, _ url: String, params: [De
     }
 }
 
-func AssertNotMatch(_ route: DeepLinkRouteConvertible, _ url: String, _ message: String = "", file: StaticString = #file, line: UInt = #line) {
+func AssertNotMatch(_ route: DeepLinkRoute, _ url: String, _ message: String = "", file: StaticString = #file, line: UInt = #line) {
     let result = DeepLinkPatternMatcher(route: route, url: URL(string: url)!).match()
     XCTAssertFalse(result.0, message, file: file, line: line)
     XCTAssertEqual(result.1, [:])
@@ -163,7 +163,7 @@ class DeeperTests: XCTestCase {
     }
     
     func testThatPatternMatchesQueryParameters() {
-        var route: DeepLinkRouteConvertible
+        var route: DeepLinkRoute
 
         route = "recipe" .? .recipeId & .menuId
         AssertMatches(route, "http://recipe?recipeId=1&menuId=2", params: [.recipeId: "1", .menuId: "2"])

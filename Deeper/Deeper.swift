@@ -67,30 +67,33 @@ public func |(lhs: DeepLinkPatternParameter, rhs: DeepLinkRoute) -> DeepLinkRout
 infix operator .? : MultiplicationPrecedence
 infix operator .?? : MultiplicationPrecedence
 
-public func .?(lhs: DeepLinkRoute, rhs: DeepLinkQueryPattern) -> DeepLinkRouteWithQuery {
-    return DeepLinkRouteWithQuery(pattern: lhs.pattern, query: [rhs])
+public func .?(lhs: DeepLinkRoute, rhs: DeepLinkQueryPattern) -> DeepLinkRoute {
+    return DeepLinkRoute(pattern: lhs.pattern, query: [rhs])
 }
 
-public func .?(lhs: DeepLinkRoute, rhs: DeepLinkPatternParameter) -> DeepLinkRouteWithQuery {
-    return DeepLinkRouteWithQuery(pattern: lhs.pattern, query: [.param(rhs)])
+public func .?(lhs: DeepLinkRoute, rhs: DeepLinkPatternParameter) -> DeepLinkRoute {
+    return DeepLinkRoute(pattern: lhs.pattern, query: [.param(rhs)])
 }
 
-public func .??(lhs: DeepLinkRoute, rhs: DeepLinkPatternParameter) -> DeepLinkRouteWithQuery {
-    return DeepLinkRouteWithQuery(pattern: lhs.pattern, query: [.maybe(rhs)])
+public func .??(lhs: DeepLinkRoute, rhs: DeepLinkPatternParameter) -> DeepLinkRoute {
+    return DeepLinkRoute(pattern: lhs.pattern, query: [.maybe(rhs)])
 }
 
-public func &(lhs: DeepLinkRouteWithQuery, rhs: DeepLinkQueryPattern) -> DeepLinkRouteWithQuery {
-    return DeepLinkRouteWithQuery(pattern: lhs.route.pattern, query: lhs.route.query + [rhs])
+public func &(lhs: DeepLinkRoute, rhs: DeepLinkQueryPattern) -> DeepLinkRoute {
+    precondition(!lhs.query.isEmpty, "& operator can be used only when left handside pattern has at least one query item")
+    return DeepLinkRoute(pattern: lhs.pattern, query: lhs.query + [rhs])
 }
 
-public func &(lhs: DeepLinkRouteWithQuery, rhs: DeepLinkPatternParameter) -> DeepLinkRouteWithQuery {
-    return DeepLinkRouteWithQuery(pattern: lhs.route.pattern, query: lhs.route.query + [.param(rhs)])
+public func &(lhs: DeepLinkRoute, rhs: DeepLinkPatternParameter) -> DeepLinkRoute {
+    precondition(!lhs.query.isEmpty, "& operator can be used only when left handside pattern has at least one query item")
+    return DeepLinkRoute(pattern: lhs.pattern, query: lhs.query + [.param(rhs)])
 }
 
 infix operator &? : MultiplicationPrecedence
 
-public func &?(lhs: DeepLinkRouteWithQuery, rhs: DeepLinkPatternParameter) -> DeepLinkRouteWithQuery {
-    return DeepLinkRouteWithQuery(pattern: lhs.route.pattern, query: lhs.route.query + [.maybe(rhs)])
+public func &?(lhs: DeepLinkRoute, rhs: DeepLinkPatternParameter) -> DeepLinkRoute {
+    precondition(!lhs.query.isEmpty, "&? operator can be used only when left handside pattern has at least one query item")
+    return DeepLinkRoute(pattern: lhs.pattern, query: lhs.query + [.maybe(rhs)])
 }
 
 public func |(lhs: DeepLinkPatternParameter, rhs: DeepLinkPatternParameter) -> DeepLinkQueryPattern {

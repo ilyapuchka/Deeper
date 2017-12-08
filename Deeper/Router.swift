@@ -21,23 +21,14 @@ public class Router<Intent>: DeepLinkRouter {
     }
 
     public func add(routes: [DeepLinkRoute], handler: @escaping HandlerClosure) {
-        add(routes: routes as [DeepLinkRouteConvertible], handler: handler)
-    }
-
-    public func add(routes: DeepLinkRoute..., handler: @escaping HandlerClosure) {
-        add(routes: routes as [DeepLinkRouteConvertible], handler: handler)
-    }
-
-    public func add(routes: DeepLinkRouteConvertible..., handler: @escaping HandlerClosure) {
-        add(routes: routes, handler: handler)
-    }
-    
-    public func add(routes: [DeepLinkRouteConvertible], handler: @escaping HandlerClosure) {
-        let routes = routes.map({ $0.route })
         routesPreference.append(contentsOf: routes)
         routes.forEach({ routesHandlers[$0] = handler })
     }
-    
+
+    public func add(routes: DeepLinkRoute..., handler: @escaping HandlerClosure) {
+        add(routes: routes, handler: handler)
+    }
+
     public func openURL(_ url: URL) -> Intent? {
         guard url.scheme == scheme else { return nil }
         
