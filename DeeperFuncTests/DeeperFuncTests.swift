@@ -24,14 +24,14 @@ class DeeperFuncTests: XCTestCase {
     
     func AssertMatch(_ intent: Intent, _ url: String, file: StaticString = #file, line: UInt = #line) {
         let url = URL(string: url)!
-        let matched = router.openURL(url)
+        let matched = router.intent(for: url)
         XCTAssertNotNil(matched, file: file, line: line)
         XCTAssertEqual(matched, intent, file: file, line: line)
     }
     
     func AssertNotMatch(_ url: String, file: StaticString = #file, line: UInt = #line) {
         let url = URL(string: url)!
-        let matched = router.openURL(url)
+        let matched = router.intent(for: url)
         XCTAssertNil(matched, file: file, line: line)
     }
 
@@ -257,7 +257,7 @@ class DeeperFuncTests: XCTestCase {
         let printed = router.url(for: intent)
         XCTAssertEqual(printed, url, "Invalid print", file: file, line: line)
 
-        let result = router.openURL(url)
+        let result = router.intent(for: url)
         XCTAssertEqual(result, intent, "Failed to match url", file: file, line: line)
     }
 

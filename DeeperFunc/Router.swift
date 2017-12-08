@@ -27,7 +27,7 @@ public class Router<U: Route>: DeepLinkRouter, CustomStringConvertible {
         return "\(type(of: self)):\n[\(route?.template ?? "")]"
     }
     
-    public func openURL(_ url: URL) -> U? {
+    public func intent(for url: URL) -> U? {
         guard
             let components = url.routeComponents,
             url.scheme == scheme,
@@ -172,13 +172,13 @@ func parenthesize<A, B, C, D, E, F>(_ t: (A, B, C, D, E, F)) -> (((((A, B), C), 
 
 extension Router {
 
-    public func url(for route: U) -> URL? {
-        return self.route?.print(route).flatMap(url(from:))
+    public func url(for intent: U) -> URL? {
+        return self.route?.print(intent).flatMap(url(from:))
     }
     
-    public func open(route: U) -> Bool {
-        guard let url = url(for: route) else { return false }
-        let deeplink = DeepLink(url: url, intent: route)
+    public func open(urlFor intent: U) -> Bool {
+        guard let url = url(for: intent) else { return false }
+        let deeplink = DeepLink(url: url, intent: intent)
         rootDeepLinkHandler?.open(deeplink: deeplink, animated: true) as Void?
         return true
     }

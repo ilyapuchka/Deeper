@@ -29,7 +29,7 @@ public class Router<Intent>: DeepLinkRouter {
         add(routes: routes, handler: handler)
     }
 
-    public func openURL(_ url: URL) -> Intent? {
+    public func intent(for url: URL) -> Intent? {
         guard url.scheme == scheme else { return nil }
         
         for route in routesPreference {

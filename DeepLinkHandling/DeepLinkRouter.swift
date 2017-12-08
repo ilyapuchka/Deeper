@@ -16,20 +16,20 @@ public protocol DeepLinkRouter {
     var rootDeepLinkHandler: AnyDeepLinkHandler<Intent>? { get }
     
     /// Try to parse url to Intent
-    func openURL(_ url: URL) -> Intent?
+    func intent(for url: URL) -> Intent?
 }
 
 extension DeepLinkRouter {
     
     /// Returns true if url can be parsed to Intent
     public func canOpen(url: URL) -> Bool {
-        return openURL(url) != nil
+        return intent(for: url) != nil
     }
     
     /// Return true if url can be parsed to Intent and opens it with `rootDeepLinkHandler`
     @discardableResult
     public func open(url: URL) -> Bool {
-        guard let intent = openURL(url) else { return false }
+        guard let intent = intent(for: url) else { return false }
         let deeplink = DeepLink(url: url, intent: intent)
         rootDeepLinkHandler?.open(deeplink: deeplink, animated: true) as Void?
         return true
