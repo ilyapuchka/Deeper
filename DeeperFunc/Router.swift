@@ -9,7 +9,15 @@
 import Foundation
 
 public protocol Route: Equatable {
-    func deconstruct<A>(_ constructor: ((A) -> Self)) -> A?
+    func deconstruct<A>(_ constructor: (A) -> Self) -> A?
+}
+
+extension Route {
+    public func match<A>(_ constructor: (A) -> Self, _ values: Any?) -> A? {
+        guard let values = values as? A else { return nil }
+        guard self == constructor(values) else { return nil }
+        return values
+    }
 }
 
 public class Router<U: Route>: DeepLinkRouter, CustomStringConvertible {
@@ -53,8 +61,8 @@ public class Router<U: Route>: DeepLinkRouter, CustomStringConvertible {
     }
     
     @discardableResult
-    public func add<S: ClosedPatternState>(_ intent: U, route: RoutePattern<Void, S>) -> Router {
-        return add(route.map({ intent }, { $0 == intent ? () : nil }))
+    public func add<S: ClosedPatternState>(_ intent: @escaping @autoclosure () -> U, route: RoutePattern<Void, S>) -> Router {
+        return add(route.map({ intent() }, { $0.deconstruct(intent) }))
     }
     
     @discardableResult

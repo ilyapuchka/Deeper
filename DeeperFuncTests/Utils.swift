@@ -29,21 +29,25 @@ enum Intent: Route, Equatable {
     case optionalParam(Int?)
     case optionalSecondParam(Int, String?)
 
-    func deconstruct<A>(_ constructor: ((A) -> Intent)) -> A? {
+    func deconstruct<A>(_ constructor: (A) -> Intent) -> A? {
         switch self {
-        case let .pathAndQueryParams(values as A) where self == constructor(values): return values
-        case let .singleParam(values as A) where self == constructor(values): return values
-        case let .twoParams(values as A) where self == constructor(values): return values
-        case let .anyMiddleParam(values as A) where self == constructor(values): return values
-        case let .anyMiddleParams(values as A) where self == constructor(values): return values
-        case let .anyEndParam(values as A) where self == constructor(values): return values
-        case let .anyStartParam(values as A) where self == constructor(values): return values
-        case let .eitherIntOrInt(values as A) where self == constructor(values): return values
-        case let .eitherIntOrString(values as A) where self == constructor(values): return values
-        case let .eitherIntOrVoid(values as A) where self == constructor(values): return values
-        case let .optionalParam(values as A) where self == constructor(values): return values
-        case let .optionalSecondParam(values as A) where self == constructor(values): return values
-        default: return nil
+        case let .pathAndQueryParams(values): return match(constructor, values)
+        case let .singleParam(values): return match(constructor, values)
+        case let .twoParams(values): return match(constructor, values)
+        case let .anyMiddleParam(values): return match(constructor, values)
+        case let .anyMiddleParams(values): return match(constructor, values)
+        case let .anyEndParam(values): return match(constructor, values)
+        case let .anyStartParam(values): return match(constructor, values)
+        case let .eitherIntOrInt(values): return match(constructor, values)
+        case let .eitherIntOrString(values): return match(constructor, values)
+        case let .eitherIntOrVoid(values): return match(constructor, values)
+        case let .optionalParam(values): return match(constructor, values)
+        case let .optionalSecondParam(values): return match(constructor, values)
+        case .empty: return match(constructor, ())
+        case .anyMiddle: return match(constructor, ())
+        case .anyEnd: return match(constructor, ())
+        case .anyStart: return match(constructor, ())
+        case .orPattern: return match(constructor, ())
         }
     }
     
