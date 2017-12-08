@@ -13,7 +13,7 @@ class DeepLinkHandlingTests: XCTestCase {
     
     func testThatItDoesNotOpenURLWithWrongScheme() {
         let router = Router(scheme: "app", rootDeepLinkHandler: FinalHandler())
-        router.add(routes: ["recipes"]) { _, _ in .action }
+        router.add(routes: "recipes" .? .string("recipeId"), DeepLinkRoute("recipes")) { _, _ in .action }
         XCTAssertFalse(router.canOpen(url: URL(string: "http://recipes")!))
     }
     
