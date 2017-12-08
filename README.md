@@ -22,6 +22,8 @@ You are not limited to using `enum` for that, but it will make it easier to keep
 
 Next you create a router object and define the "routes" for your deeplinks. You can use any router you want along with Deeper, you'll just need to write some extensions to bridge their APIs and implement `DeepLinkRouter` protocol. In the [article](http://ilya.puchka.me/deeplinks-no-brainer/) you can see an example of using [JLRoutes](https://github.com/joeldev/JLRoutes), which was an inspiration for Deeper's own router.
 
+This project comes with to variants of routers, `Deeper.Router` and `DeeperFunc.Router`. You can use either of them which better suits your taste.
+
 #### Deeper.Router
 
 With `Deeper.Router` you register routes by registering handler closures which return spicific intent that should be performed when this deeplink is handeled or `nil` if it can't be properly handled. In this handler you have access to the full url, as well as to parsed parameters, extracted from the paths, based on the pattern that you are defining.
@@ -33,7 +35,7 @@ import Deeper
 
 let router = Router<Intent>(scheme: "myapp", rootDeepLinkHandler: appDelegate)
 
-router.add(routes: ["profile" / "userId" ]) { url, params in 
+router.add(routes: ["profile" / ":userId" ]) { url, params in
   guard let userId = params[.init("userId")] else { return nil }
   return .showProfile(userId: userId)
 }

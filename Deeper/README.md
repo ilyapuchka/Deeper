@@ -5,7 +5,7 @@ With `Deeper.Router` you register routes by registering handler closures which r
 ```swift
 let router = Router<Intent>(scheme: "myapp", rootDeepLinkHandler: appDelegate)
 
-router.add(routes: ["profile/userId") ]) { url, params in 
+router.add(routes: ["profile/:userId") ]) { url, params in
 	guard let userId = params[DeepLinkPatternParameter("userId")] else { return nil }
 	return .showProfile(userId: userId)
 }
