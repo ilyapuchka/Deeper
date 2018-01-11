@@ -58,11 +58,11 @@ You will also need to make your intent type conform to `Route` protocol. For tha
 ```swift
 extension Intent: Route {
 
-  func deconstruct<A>(_ constructor: ((A) -> Intent)) -> A? {
+  func deconstruct<A>(_ constructor: (A) -> Intent) -> A? {
     switch self {
-    case let .showProfile(values as A) where self == constructor(values): return values
-    case let .follow(values as A) where self == constructor(values): return values
-    case let .retweet(values as A) where self == constructor(values): return values
+    case .showProfile(let values): return extract(constructor, values)
+    case .follow(let values):      return extract(constructor, values)
+    case .retweet(let values):     return extract(constructor, values)
     }
   } 
 
