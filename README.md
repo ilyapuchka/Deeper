@@ -85,10 +85,10 @@ class ProfileScreen: UIViewController, DeepLinkHandler {
     // handle deeplink here and return one of the states based on the state of the app
     switch deeplink.intent {
     case .shopProfile(let userId):
-      return .opened(deeplink, { [unowned self] animated in 
+      return .opened(deeplink) { [unowned self] animated in 
 	//perform some side-effect that i.e. triggers loading of profile data
 	self.userService.getProfile(forUserWithId: userId, completion: { result in self.updateView(result) })
-      })
+      }
     default:
       // fail on any other deeplinks as they are not supported by this screen
       // you can also use assertions here if you like to catch this earlier
@@ -110,18 +110,18 @@ extension AppDelegate: AnyDeepLinkHandler<MyDeepLinkIntent> {
     // that will decided to what tab to switch and so on
     switch deeplink.intent {
     case .showProfile:
-      return .passedThrough(deeplink, { [unowned self] animated in 
+      return .passedThrough(deeplink) { [unowned self] animated in 
 	// this method returns some other handler that will be invoked right after this closure returns
 	return self.showProfileScreen(toOpen: deeplink, animanted: animated)
-      })
+      }
     case .follow(let userId):
-      return .opened(deeplink, { [unowned self] in
+      return .opened(deeplink) { [unowned self] in
 	self.userService.follow(userWithId: userId, completion: { result in self.showUserMessage(result) })
-      })
+      }
     case .retweet(let tweetId):
-      return .opened(deeplink, { [unowned self] in
+      return .opened(deeplink) { [unowned self] in
 	self.tweetService.retweet(tweetWithId: userId, completion: { result in self.showUserMessage(result) })
-      })
+      }
     }
   }
   
