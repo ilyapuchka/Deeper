@@ -13,7 +13,9 @@ public protocol Route: Equatable {
 }
 
 extension Route {
-    public func match<A>(_ constructor: (A) -> Self, _ values: Any?) -> A? {
+    /// Matches route with passed in constructor and its values with `A`, returns values if matched.
+    /// To be used in `deconstruct` implementation.
+    public func extract<A>(_ constructor: (A) -> Self, _ values: Any?) -> A? {
         guard let values = values as? A else { return nil }
         guard self == constructor(values) else { return nil }
         return values
